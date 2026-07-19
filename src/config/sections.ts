@@ -4,14 +4,18 @@ import type { IconName } from "@/components/ds/icon";
  * The PrimeBuild Official Store section registry — the single source of truth for
  * navigation. The sidebar, command palette and dashboard all derive from this.
  *
- * PrimeBuild Official Store is the administration console for the live
- * primebuildfit Shopify store. Every data module is READ-ONLY: it reads the live
- * storefront via the Shopify Admin API and never writes to it. Nothing here
- * fabricates data — modules that depend on the store show an honest "store not
- * connected" state until credentials are configured.
+ * PrimeBuild Official Store is the PRODUCT BUILDER for PrimeBuild's commercial
+ * channel; PrimeBuild Store is the product built from here, not a separate
+ * project (see docs/architecture/PRODUCT_BUILDER.md).
+ *
+ * Every data module is currently READ-ONLY: it reads the live product via the
+ * Shopify Admin API and never writes to it. That is declared architectural debt,
+ * not the intended end state — the Builder role requires writing. Nothing here
+ * fabricates data: modules show an honest "not connected" state until
+ * credentials are configured.
  *
  * Sections are grouped by COMMERCIAL AREA (Panel · Catálogo · Ventas · Marketing
- * y canales · Sistema) so the console reads like a commerce command-center, not a
+ * y canales · Sistema) so the Builder reads like a commerce command-center, not a
  * generic admin panel. Icons are Design-System icon names (see components/ds).
  */
 

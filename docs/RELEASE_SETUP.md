@@ -68,7 +68,7 @@ Ninguna otra app puede volver a robarle el manifiesto.
 cd D:\empresas\WorkspaceExtra\PrimeBuildOfficialStore
 & "C:\Program Files\GitHub CLI\gh.exe" repo create $CHANNEL_REPO `
   --public --source=. --remote=origin --push `
-  --description "PrimeBuild Official Store — read-only administration console for the live primebuildfit Shopify store (Tauri desktop app)."
+  --description "PrimeBuild Official Store — the Product Builder for PrimeBuild's commercial channel (Tauri desktop app)."
 ```
 
 > **Debe ser público.** El updater descarga los assets **sin autenticación**; en un repo privado daría 404. El historial no contiene secretos: no hay `.env`, ni claves, ni tokens reales (solo marcadores). La clave privada de firma vive fuera del proyecto y nunca se commiteó.

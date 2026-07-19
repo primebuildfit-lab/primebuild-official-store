@@ -1,24 +1,41 @@
 # PrimeBuild Official Store
 
-**The official administration console for the PrimeBuild (primebuildfit) Shopify store.**
+**The Product Builder for PrimeBuild's commercial channel.**
 
-PrimeBuild Official Store is an **independent** application that belongs **only to
-PrimeBuild**. It is a **read-only** live view of the `primebuildfit` storefront
-(Shopify):
+This app is **not** the store, **not** the storefront and **not** what a customer
+uses. It is the environment from which **PrimeBuild Store** — the website, the
+future app, the catalogue, the checkout and every public channel — is designed,
+configured, administered, analysed, published and evolved.
 
-- **Panel** — a live snapshot of the store (products, customers, recent orders, revenue).
+PrimeBuild Store is not a separate project: it is the product this Builder
+produces. See [`docs/architecture/PRODUCT_BUILDER.md`](docs/architecture/PRODUCT_BUILDER.md)
+for the normative definition and how it maps onto *Group Vision*'s Constructor
+category.
+
+It is an **independent** application that belongs **only to PrimeBuild**. It is
+built for the operator who works in it daily, never for the customer.
+
+Today it surfaces:
+
+- **Panel** — a live snapshot of the product (products, customers, recent orders, revenue).
 - **Tienda** — Resumen, Productos, Colecciones, Pedidos, Clientes, Descuentos and the PB Coins rewards program.
 - **Canales y marketing** — an honest overview of external sales channels (Google Merchant, Meta, Pinterest, SEO, apps) that links out to the Shopify admin.
 - **Sistema** — connection/environment settings and live status.
 
-It is its own app. The store-management surface used to live inside PrimeBuild
-Internal OS; it was extracted into this dedicated console.
+> **Current capability: read-only.** The Builder role it holds architecturally
+> requires writing; this implementation cannot write yet, and refuses mutations
+> in code. That gap is declared debt, recorded in the document linked above —
+> not something to infer from the name in either direction.
+
+The commercial surface used to live inside PrimeBuild Internal OS; it was
+extracted into this dedicated Builder.
 
 Three neighbouring systems are easy to confuse with it, and with each other:
 
 | System | What it is | Relationship to this app |
 |---|---|---|
-| **PrimeBuild Internal OS** | The internal operations console for the PrimeBuild brand — company, not store | Separate app. It links out to this one |
+| **PrimeBuild Store** | The product this Builder builds: website, future app, catalogue, checkout, public channels | **Not a separate project.** It is the output, not a peer |
+| **PrimeBuild Internal OS** | The internal operations console for the PrimeBuild brand — the company, not the commercial product | Separate app. It links out to this one |
 | **CoinOS** | The group's financial-infrastructure OS. **Formerly named PrimeBuild Core** — the name changed, the system did not | Unrelated |
 | **`priembuild-core`** | The live Shopify rewards backend behind `primebuildfit.com`. Despite the similar name, **it is not CoinOS** | Unrelated. This console reads the PB Coins programme it powers, read-only |
 
