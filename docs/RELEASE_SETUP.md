@@ -1,7 +1,28 @@
 # PrimeBuild Official Store — puesta en marcha del release automático
 
-Estado a 2026-07-19. La automatización está **construida y validada**; faltan los
-pasos que requieren tus credenciales de GitHub.
+Estado a 2026-07-19. Todo el código y la automatización están **listos y commiteados**.
+Faltan 3 pasos que requieren tus credenciales.
+
+---
+
+## Contexto: por qué cambiamos de repo
+
+Official Store publicaba sus releases en `primebuildfit-lab/primebuild-saas`, compartido
+con las apps de Eventra, y el updater resolvía `releases/latest/download/...`.
+
+**Eso se rompió en producción hoy mismo:** Eventra publicó `eventra-desktop-v0.1.2` a las
+13:02, después de `store-v0.1.2` (12:17). El puntero `latest` se movió y el endpoint de la
+Store pasó a devolver **404**. Dos apps no pueden compartir el puntero `latest` de forma
+fiable.
+
+**Solución aplicada** (la que ya usan Eventra Internal OS y Business Admin):
+
+- Repo propio: `primebuildfit-lab/primebuild-official-store`
+- El updater lee un **tag FIJO**, nunca `releases/latest`:
+  `releases/download/store-latest/latest-store.json`
+- El workflow re-apunta ese tag fijo en cada publicación, automáticamente.
+
+Así ninguna otra app puede volver a robarle el manifiesto.
 
 ---
 
@@ -9,111 +30,98 @@ pasos que requieren tus credenciales de GitHub.
 
 | Pieza | Estado |
 |---|---|
-| Repositorio git local (`main`, 2 commits) | ✅ |
-| Pipeline de release (`scripts/desktop/release.mjs`) | ✅ ya existía, validado |
-| Gate de versión (`pnpm desktop:version --check`) | ✅ en sync a v0.1.0 |
-| Workflow CI (`.github/workflows/desktop-release.yml`) | ✅ creado |
-| Manifiesto `latest-store.json` = endpoint del updater | ✅ coinciden |
-| Clave pública del updater en `tauri.conf.json` | ✅ |
-| Clave privada de firma | ✅ existe en `~/.tauri/primebuild-store.key` |
+| Rediseño premium promovido sobre el original | ✅ (respaldo en `-PRE-REDESIGN-BACKUP`) |
+| Repo git local, rama `main`, 5 commits | ✅ árbol limpio |
+| Versión sincronizada en los 3 ficheros | ✅ **0.1.3** (0.1.2 ya está publicada) |
+| Los 4 arreglos del updater | ✅ ya portados a este árbol (ver `PRIMEBUILD_OFFICIAL_STORE_UPDATER_REPORT.md`) |
+| Endpoint apuntando al tag fijo `store-latest` | ✅ |
+| Workflow CI que firma, publica y mantiene el canal | ✅ `.github/workflows/desktop-release.yml` |
+| Auditoría de secretos del historial | ✅ limpio — seguro para repo público |
 
 ---
 
-## ⚠️ Decisión pendiente: dónde viven los releases
+## Paso 1 — Crear el repo y subir el código
 
-Hay una **incoherencia** que hay que resolver antes del primer release, porque si
-no, el auto-update fallará sin dar error visible.
-
-- `src-tauri/dist.config.json` dice que el updater busca en:
-  `https://github.com/primebuildfit-lab/primebuild-saas/releases/latest/download/latest-store.json`
-  → es el repo de **Eventra** (estrategia de "repo de releases compartido").
-- Pero el workflow publica en el repo **donde se ejecuta** (`github.repository`).
-
-Si subes Official Store a su propio repo, el workflow publicará ahí, mientras la
-app seguirá mirando a `primebuild-saas`. **No se encontrarían nunca.**
-
-### Opción A (recomendada) — repo propio
-
-1. Crear `primebuildfit-lab/primebuild-official-store`.
-2. Cambiar el endpoint en `src-tauri/dist.config.json` a ese repo.
-   Es un recurso leído en runtime: **no requiere recompilar la app**.
-
-### Opción B — mantener el repo de releases compartido
-
-Publicar los releases en `primebuild-saas`. Requiere que el workflow apunte a ese
-repo explícitamente (o alojar ahí el código), y usar el secreto
-`RELEASE_DOWNLOAD_BASE`.
-
----
-
-## Pasos que debes dar tú (requieren tus credenciales)
-
-Yo no puedo autenticarme en GitHub por ti.
-
-### 1. Instalar el CLI (opcional, o hazlo por la web)
-
-```powershell
-winget install GitHub.cli
-gh auth login
-```
-
-### 2. Crear el repo y subir el código
+Lo intenté y el sistema de permisos lo bloqueó (crear un repo público es irreversible).
+Ejecútalo tú:
 
 ```powershell
 cd D:\empresas\WorkspaceExtra\PrimeBuildOfficialStore
-gh repo create primebuildfit-lab/primebuild-official-store --private --source=. --push
+& "C:\Program Files\GitHub CLI\gh.exe" repo create primebuildfit-lab/primebuild-official-store `
+  --public --source=. --remote=origin --push `
+  --description "PrimeBuild Official Store — read-only administration console for the live primebuildfit Shopify store (Tauri desktop app)."
 ```
 
-### 3. Cargar los secretos de firma
+> **Debe ser público.** El updater descarga los assets **sin autenticación**; en un repo
+> privado daría 404. Ya verifiqué que el historial no contiene secretos: no hay `.env`,
+> ni claves, ni tokens reales (solo marcadores `shpat_********`). La clave privada de
+> firma vive fuera del proyecto y nunca se commiteó.
 
-En *Settings → Secrets and variables → Actions*:
+## Paso 2 — Cargar los secretos de firma
+
+*Settings → Secrets and variables → Actions → New repository secret*
 
 | Secreto | Valor |
 |---|---|
-| `TAURI_SIGNING_PRIVATE_KEY` | contenido de `~/.tauri/primebuild-store.key` |
-| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | su contraseña |
+| `TAURI_SIGNING_PRIVATE_KEY` | contenido completo de `C:\Users\carlo\.tauri\primebuild-store.key` |
+| `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | la contraseña de esa clave |
 
-> La clave privada **nunca** debe commitearse. Solo vive en estos secretos.
-
-### 4. Aplicar la decisión de arriba (si eliges la Opción A)
-
-Editar el `endpoint` de `src-tauri/dist.config.json` al repo nuevo y commitear.
-
-### 5. Lanzar el primer release automático
+O por CLI:
 
 ```powershell
-git tag store-v0.1.0
-git push origin store-v0.1.0
+$gh = "C:\Program Files\GitHub CLI\gh.exe"
+& $gh secret set TAURI_SIGNING_PRIVATE_KEY --repo primebuildfit-lab/primebuild-official-store < "$env:USERPROFILE\.tauri\primebuild-store.key"
+& $gh secret set TAURI_SIGNING_PRIVATE_KEY_PASSWORD --repo primebuildfit-lab/primebuild-official-store
 ```
 
-El workflow compila, firma, genera `latest-store.json` y crea el Release.
+> ⚠️ **`~/.tauri/primebuild-store.key` es el único punto de fallo irreversible.** Es lo
+> único capaz de entregar una actualización a las copias ya instaladas. Si se pierde,
+> quedan permanentemente sin poder actualizarse. Existe **una sola copia, en `C:`** —
+> necesita un respaldo real fuera de la máquina (gestor de contraseñas o soporte cifrado).
 
-### 6. Publicar el Release
+## Paso 3 — Lanzar el release automático
 
-Se crea como **borrador a propósito** — nada se hace público sin que tú lo
-revises. Ábrelo, compruébalo y pulsa *Publish*, marcándolo como **latest**.
+```powershell
+git tag store-v0.1.3
+git push origin store-v0.1.3
+```
 
-> El updater **solo ve releases publicados y marcados como "latest"**. Mientras
-> siga en borrador, es invisible para la app: esa es la puerta de seguridad.
+El workflow entonces, solo:
+
+1. instala dependencias y comprueba que la versión esté sincronizada;
+2. compila el bundle y lo **firma** con tu secreto;
+3. genera `latest-store.json` con la URL y la firma correctas;
+4. publica el release `store-v0.1.3` con `.exe` + `.sig` + manifiesto;
+5. **re-apunta el tag fijo `store-latest`** a ese manifiesto.
+
+Seguimiento: `gh run watch --repo primebuildfit-lab/primebuild-official-store`
 
 ---
 
-## Cómo comprobar que funciona (prueba A→B)
+## Comprobar que funciona
 
-1. Instala el `*-setup.exe` de v0.1.0.
-2. Sube la versión (`node scripts/desktop/release.mjs 0.1.1`), etiqueta
-   `store-v0.1.1`, publica el Release.
-3. Abre la app instalada → menú **Actualizaciones**. Debe detectar la 0.1.1,
-   descargarla, verificar la firma, instalarla y reiniciarse.
+```powershell
+# el endpoint del updater debe responder 200 con el manifiesto de la 0.1.3
+curl.exe -sSL https://github.com/primebuildfit-lab/primebuild-official-store/releases/download/store-latest/latest-store.json
+```
 
-Hasta que exista un release publicado, el panel dirá honestamente que no hay
-actualizaciones — no es un fallo, es el comportamiento diseñado.
+Prueba real A→B: instala el `*-setup.exe` de la 0.1.3, luego publica una 0.1.4 y abre la
+app instalada → menú **Actualizaciones**. Debe detectar, verificar firma, instalar y
+reabrirse sola.
+
+> El informe previo (§7-bis) advierte: la prueba de actualización instalada no se repitió
+> sobre la copia rediseñada. **Conviene hacerla una vez** ahora que se promovió.
 
 ---
 
-## Nota sobre el centinela `OWNER/REPO`
+## Notas para no romper esto
 
-`src-tauri/tauri.conf.json` conserva `https://github.com/OWNER/REPO/...` como
-endpoint. **Es intencionado y no hay que tocarlo**: `updater.rs` lo trata como
-"no configurado" para que la app no mienta. El endpoint real manda desde
-`dist.config.json`, que tiene prioridad en runtime (ver `updater.rs:155-164`).
+- **El `OWNER/REPO` de `tauri.conf.json` es intencionado.** `updater.rs:132` lo trata como
+  "no configurado" para que el panel no mienta. El endpoint real manda desde
+  `dist.config.json`, que tiene prioridad en runtime (`updater.rs:155-164`). No lo "arregles".
+- **Nunca metas `$comment` en `tauri.release.conf.json`.** El esquema de Tauri rechaza
+  propiedades desconocidas y rompe *todos* los builds firmados.
+- **GitHub renombra los assets:** todo carácter fuera de `[A-Za-z0-9._-]` pasa a punto.
+  `release.mjs` ya lo reproduce con `githubAssetName()`. No generes la URL con `%20`.
+- **La app instalada no hereda cambios de `dist.config.json`**: lleva su propia copia
+  empaquetada. Cambiar el endpoint exige publicar una versión nueva.
