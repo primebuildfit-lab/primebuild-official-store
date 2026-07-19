@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PrimeBuild Official Store</title>
+    <style>
+      :root {
+        --bg: #05070d;
+        --panel: #0c1120;
+        --ink: #e8eef9;
+        --muted: #97a2ba;
+        --accent: #818cf8;
+        --err: #f87171;
+        --line: rgba(148, 163, 184, 0.18);
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: radial-gradient(1200px 600px at 50% -10%, #16203a 0%, var(--bg) 60%);
+        color: var(--ink);
+        font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+        display: flex; align-items: center; justify-content: center;
+        -webkit-user-select: none; user-select: none;
+      }
+      .card {
+        text-align: center; padding: 40px 48px; min-width: 360px;
+      }
+      .mark {
+        font-size: 28px; font-weight: 700; letter-spacing: 0.3px;
+        display: inline-flex; align-items: center; gap: 12px;
+      }
+      .badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 34px; height: 34px; border-radius: 9px; background: var(--accent);
+        color: #0b1020; font-size: 13px; font-weight: 800;
+        box-shadow: 0 0 22px rgba(129, 140, 248, 0.55);
+      }
+      .sub { color: var(--muted); font-size: 13px; margin-top: 8px; }
+      .spinner {
+        margin: 30px auto 18px; width: 34px; height: 34px; border-radius: 50%;
+        border: 3px solid var(--line); border-top-color: var(--accent);
+        animation: spin 0.9s linear infinite;
+      }
+      @keyframes spin { to { transform: rotate(360deg); } }
+      .status { color: var(--muted); font-size: 14px; min-height: 20px; }
+      .steps { margin-top: 18px; font-size: 12px; color: var(--muted); line-height: 1.8; opacity: 0.8; }
+      .steps b { color: var(--ink); font-weight: 600; }
+      .error { display: none; }
+      .error.show { display: block; }
+      .normal.hide { display: none; }
+      .error h2 { color: var(--err); font-size: 17px; margin: 8px 0 6px; }
+      .error p { color: var(--muted); font-size: 13px; max-width: 380px; margin: 0 auto 20px; line-height: 1.6; }
+      .btn {
+        appearance: none; border: 1px solid var(--line); background: var(--panel);
+        color: var(--ink); padding: 9px 16px; border-radius: 8px; font-size: 13px;
+        cursor: pointer; margin: 0 5px;
+      }
+      .btn:hover { border-color: var(--accent); }
+      @media (prefers-color-scheme: light) {
+        :root { --bg: #f4f6fb; --panel: #ffffff; --ink: #0f172a; --muted: #64748b; --line: rgba(15,23,42,0.12); --accent: #4f46e5; }
+        body { background: radial-gradient(1200px 600px at 50% -10%, #e7ecf7 0%, var(--bg) 60%); }
+        .badge { color: #ffffff; box-shadow: 0 0 22px rgba(79, 70, 229, 0.45); }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <div class="normal" id="normal">
+        <div class="mark"><span class="badge">PB</span> PrimeBuild Official Store</div>
+        <div class="sub">Consola oficial de administración de la tienda PrimeBuild</div>
+        <div class="spinner"></div>
+        <div class="status" id="status">Iniciando PrimeBuild Official Store…</div>
+        <div class="steps">
+          <div><b>1.</b> Iniciando servicios locales</div>
+          <div><b>2.</b> Comprobando estado</div>
+          <div><b>3.</b> Conectando…</div>
+        </div>
+      </div>
+
+      <div class="error" id="error">
+        <div class="mark"><span class="badge" style="background:var(--err);box-shadow:0 0 22px var(--err);color:#1a0606">PB</span> PrimeBuild Official Store</div>
+        <h2>No se pudo iniciar PrimeBuild Official Store</h2>
+        <p id="errmsg">El servicio local de PrimeBuild Official Store no arrancó.</p>
+        <div>
+          <button class="btn" id="logsBtn">Abrir carpeta de logs</button>
+          <button class="btn" id="retryBtn">Reintentar</button>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // withGlobalTauri exposes window.__TAURI__ (core.invoke + event.listen).
+      const T = window.__TAURI__;
+      const statusEl = document.getElementById("status");
+      const normalEl = document.getElementById("normal");
+      const errorEl = document.getElementById("error");
+      const errMsgEl = document.getElementById("errmsg");
+
+      const CYCLE = ["Iniciando servicios locales…", "Comprobando estado…", "Conectando…"];
+      let ci = 0;
+      const cycle = setInterval(() => {
+        if (!errorEl.classList.contains("show")) {
+          statusEl.textContent = CYCLE[ci % CYCLE.length];
+          ci++;
+        }
+      }, 1400);
+
+      function showError(msg) {
+        clearInterval(cycle);
+        normalEl.classList.add("hide");
+        errorEl.classList.add("show");
+        if (msg) errMsgEl.textContent = msg;
+      }
+
+      function apply(s) {
+        if (!s) return;
+        if (s.phase === "error") {
+          showError(s.message);
+        } else if (s.message) {
+          statusEl.textContent = s.message;
+        }
+      }
+
+      if (T && T.core) {
+        // Pull the current status right away (avoids missing early events).
+        T.core.invoke("get_boot_status").then(apply).catch(() => {});
+        T.event.listen("core://status", (e) => apply(e.payload));
+
+        document.getElementById("logsBtn").addEventListener("click", () => {
+          T.core.invoke("open_logs_folder").catch(() => {});
+        });
+        document.getElementById("retryBtn").addEventListener("click", () => {
+          // Re-query status; the shell keeps trying to reach the server. If the
+          // server later becomes ready the shell navigates away automatically.
+          errorEl.classList.remove("show");
+          normalEl.classList.remove("hide");
+          T.core.invoke("get_boot_status").then(apply).catch(() => {});
+        });
+      }
+    </script>
+  </body>
+</html>

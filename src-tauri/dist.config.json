@@ -1,0 +1,10 @@
+{
+  "$comment": "PrimeBuild Official Store desktop DISTRIBUTION policy. Owned by the update/distribution system, NOT by the Official Store web app. Bundled as a Tauri resource and read at runtime by the shell. Editing this file changes update behaviour WITHOUT rebuilding the app (endpoint, cadence, mandatory policy).",
+  "channel": "stable",
+  "endpoint": "https://github.com/primebuildfit-lab/primebuild-saas/releases/latest/download/latest-store.json",
+  "checkOnStartup": true,
+  "checkFrequencyHours": 6,
+  "minSupportedVersion": "0.0.0",
+  "mandatory": false,
+  "mandatoryReason": ""
+}

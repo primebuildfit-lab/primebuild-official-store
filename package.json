@@ -1,0 +1,65 @@
+{
+  "name": "primebuild-official-store",
+  "version": "0.1.0",
+  "private": true,
+  "description": "PrimeBuild Official Store — the official administration console for the PrimeBuild (primebuildfit) Shopify store: a read-only live view of the storefront (catalog, collections, orders, customers, discounts and the PB Coins rewards program). Independent app; packaged as a self-rebuilding Tauri desktop app. Belongs only to PrimeBuild — not CoinOS, PrimeBuild Internal OS, Eventra or Partnera.",
+  "type": "module",
+  "engines": {
+    "node": ">=20.0.0"
+  },
+  "packageManager": "pnpm@9.15.9",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix",
+    "typecheck": "tsc --noEmit",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json,css}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json,css}\"",
+    "tauri": "tauri",
+    "desktop:prepare": "node scripts/desktop/prepare-server.mjs",
+    "desktop:dev": "tauri dev",
+    "desktop:build": "tauri build",
+    "desktop:version": "node scripts/desktop/version-sync.mjs",
+    "desktop:release": "node scripts/desktop/release.mjs",
+    "desktop:auto": "node scripts/desktop/auto-rebuild.mjs",
+    "desktop:auto:once": "node scripts/desktop/auto-rebuild.mjs --once"
+  },
+  "dependencies": {
+    "clsx": "^2.1.1",
+    "next": "^15.1.4",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "server-only": "^0.0.1",
+    "tailwind-merge": "^2.6.0"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.2.0",
+    "@tailwindcss/postcss": "^4.0.0",
+    "@tauri-apps/cli": "^2",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@testing-library/react": "^16.1.0",
+    "@types/node": "^22.10.5",
+    "@types/react": "^19.0.4",
+    "@types/react-dom": "^19.0.2",
+    "@vitejs/plugin-react": "^4.3.4",
+    "eslint": "^9.17.0",
+    "eslint-config-next": "^15.1.4",
+    "jsdom": "^25.0.1",
+    "prettier": "^3.4.2",
+    "tailwindcss": "^4.0.0",
+    "typescript": "^5.7.3",
+    "vitest": "^2.1.8"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "@tailwindcss/oxide",
+      "sharp",
+      "unrs-resolver"
+    ]
+  }
+}

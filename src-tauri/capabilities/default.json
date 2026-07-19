@@ -1,0 +1,7 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Deny-by-default capabilities for the PrimeBuild Official Store desktop shell (window 'main') and its separate technical update panel (window 'updater'). Both webviews receive ONLY core defaults (event listen, path, window basics). The shell/opener/window-state plugins and the whole update flow (check/download/verify/install via tauri-plugin-updater) are driven exclusively from Rust, so no filesystem, shell, http, opener or updater command is ever exposed to the web layer.",
+  "windows": ["main", "updater"],
+  "permissions": ["core:default"]
+}

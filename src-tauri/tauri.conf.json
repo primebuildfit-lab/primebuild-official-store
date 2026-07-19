@@ -1,0 +1,62 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "PrimeBuild Official Store",
+  "version": "0.1.0",
+  "identifier": "com.primebuild.store",
+  "build": {
+    "beforeDevCommand": "pnpm dev",
+    "devUrl": "http://localhost:3000",
+    "beforeBuildCommand": "node scripts/desktop/prepare-server.mjs",
+    "frontendDist": "./ui"
+  },
+  "app": {
+    "withGlobalTauri": true,
+    "windows": [],
+    "security": {
+      "csp": "default-src 'self'; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline'; connect-src 'self' ipc: http://ipc.localhost",
+      "capabilities": [
+        "default"
+      ]
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": [
+      "nsis"
+    ],
+    "publisher": "PrimeBuild",
+    "category": "Business",
+    "shortDescription": "PrimeBuild Official Store — Shopify admin console",
+    "longDescription": "PrimeBuild Official Store is the official administration console for the PrimeBuild (primebuildfit) Shopify store: a read-only live view of the storefront (catalog, collections, orders, customers, discounts and the PB Coins rewards program). Independent app that belongs only to PrimeBuild — not CoinOS, PrimeBuild Internal OS, Eventra or Partnera. This desktop build runs the local server in a dedicated window and can rebuild itself automatically via the auto-rebuild pipeline.",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "server-dist": "server-dist",
+      "dist.config.json": "dist.config.json"
+    },
+    "externalBin": [
+      "binaries/node"
+    ],
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "displayLanguageSelector": false
+      }
+    }
+  },
+  "plugins": {
+    "updater": {
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDcxRjFDRkM0NzU1NDg3NEYKUldSUGgxUjF4TS94Y1NtdDU0UWQxQll0RmxuVk54amJXUG1CNGNJRXF0UENFb2p0K3BFNkVqN0oK",
+      "endpoints": [
+        "https://github.com/OWNER/REPO/releases/latest/download/latest.json"
+      ],
+      "windows": {
+        "installMode": "passive"
+      }
+    }
+  }
+}

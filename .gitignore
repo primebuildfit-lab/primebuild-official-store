@@ -1,0 +1,29 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# next.js
+/.next/
+/out/
+/build
+next-env.d.ts
+
+# testing
+/coverage
+
+# tauri
+/src-tauri/target
+/src-tauri/gen
+/src-tauri/server-dist
+/src-tauri/binaries
+/src-tauri/Cargo.lock
+
+# misc
+.DS_Store
+*.pem
+*.log
+.env
+.env*.local
+tsconfig.tsbuildinfo
+*.pid

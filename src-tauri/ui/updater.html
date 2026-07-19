@@ -1,0 +1,267 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>PrimeBuild Official Store — Actualizaciones</title>
+    <style>
+      :root {
+        --bg: #05070d;
+        --panel: #0c1120;
+        --ink: #e8eef9;
+        --muted: #97a2ba;
+        --accent: #818cf8;
+        --ok: #34d399;
+        --warn: #fbbf24;
+        --err: #f87171;
+        --line: rgba(148, 163, 184, 0.18);
+      }
+      * { box-sizing: border-box; }
+      html, body { height: 100%; margin: 0; }
+      body {
+        background: radial-gradient(1200px 600px at 50% -20%, #16203a 0%, var(--bg) 60%);
+        color: var(--ink);
+        font-family: ui-sans-serif, system-ui, "Segoe UI", Roboto, Arial, sans-serif;
+        padding: 22px; -webkit-user-select: none; user-select: none;
+      }
+      .head { display: flex; align-items: center; gap: 12px; margin-bottom: 4px; }
+      .badge {
+        display: inline-flex; align-items: center; justify-content: center;
+        width: 34px; height: 34px; border-radius: 9px; background: var(--accent);
+        color: #0b1020; font-size: 13px; font-weight: 800;
+        box-shadow: 0 0 22px rgba(129, 140, 248, 0.5);
+      }
+      h1 { font-size: 17px; margin: 0; font-weight: 700; }
+      .sub { color: var(--muted); font-size: 12px; margin: 2px 0 18px; }
+      .card {
+        background: var(--panel); border: 1px solid var(--line);
+        border-radius: 12px; padding: 16px 18px; margin-bottom: 14px;
+      }
+      .state {
+        display: inline-flex; align-items: center; gap: 8px;
+        font-size: 13px; font-weight: 600; padding: 5px 10px; border-radius: 999px;
+        border: 1px solid var(--line);
+      }
+      .dot { width: 9px; height: 9px; border-radius: 50%; background: var(--muted); }
+      .dot.busy { background: var(--accent); animation: pulse 1s ease-in-out infinite; }
+      .dot.ok { background: var(--ok); }
+      .dot.warn { background: var(--warn); }
+      .dot.err { background: var(--err); }
+      @keyframes pulse { 50% { opacity: 0.35; } }
+      .msg { color: var(--muted); font-size: 13px; margin-top: 10px; min-height: 18px; line-height: 1.5; }
+      .rows { display: grid; grid-template-columns: auto 1fr; gap: 7px 16px; font-size: 12.5px; }
+      .rows dt { color: var(--muted); }
+      .rows dd { margin: 0; font-variant-numeric: tabular-nums; word-break: break-word; }
+      .progress { height: 8px; background: rgba(148,163,184,0.15); border-radius: 999px; overflow: hidden; margin-top: 12px; display: none; }
+      .progress.show { display: block; }
+      .bar { height: 100%; width: 0%; background: var(--accent); transition: width 0.2s ease; }
+      .pctline { font-size: 11.5px; color: var(--muted); margin-top: 6px; display: none; }
+      .pctline.show { display: block; }
+      .notes { font-size: 12px; color: var(--ink); background: rgba(129,140,248,0.08); border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-top: 12px; white-space: pre-wrap; display: none; max-height: 140px; overflow: auto; }
+      .notes.show { display: block; }
+      .err-box { color: var(--err); font-size: 11.5px; margin-top: 10px; white-space: pre-wrap; display: none; }
+      .err-box.show { display: block; }
+      .actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+      .btn {
+        appearance: none; border: 1px solid var(--line); background: var(--panel);
+        color: var(--ink); padding: 9px 15px; border-radius: 8px; font-size: 13px; cursor: pointer;
+      }
+      .btn:hover:not(:disabled) { border-color: var(--accent); }
+      .btn.primary { background: var(--accent); color: #0b1020; border-color: var(--accent); font-weight: 600; }
+      .btn:disabled { opacity: 0.4; cursor: not-allowed; }
+      @media (prefers-color-scheme: light) {
+        :root { --bg: #f4f6fb; --panel: #ffffff; --ink: #0f172a; --muted: #64748b; --line: rgba(15,23,42,0.12); --accent: #4f46e5; }
+        body { background: radial-gradient(1200px 600px at 50% -20%, #e7ecf7 0%, var(--bg) 60%); }
+        .badge { color: #fff; }
+        .btn.primary { color: #fff; }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="head">
+      <span class="badge">PB</span>
+      <div>
+        <h1>PrimeBuild Official Store</h1>
+        <div class="sub">Panel técnico de actualización</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <span class="state"><span class="dot" id="dot"></span><span id="stateLabel">—</span></span>
+      <div class="msg" id="msg">Preparando…</div>
+      <div class="progress" id="progress"><div class="bar" id="bar"></div></div>
+      <div class="pctline" id="pctline"></div>
+      <div class="notes" id="notes"></div>
+      <div class="err-box" id="errBox"></div>
+    </div>
+
+    <div class="card">
+      <dl class="rows">
+        <dt>Versión instalada</dt><dd id="v-version">—</dd>
+        <dt>Versión disponible</dt><dd id="v-available">—</dd>
+        <dt>Build</dt><dd id="v-build">—</dd>
+        <dt>Commit</dt><dd id="v-commit">—</dd>
+        <dt>Fecha de compilación</dt><dd id="v-date">—</dd>
+        <dt>Canal</dt><dd id="v-channel">—</dd>
+        <dt>Entorno</dt><dd id="v-env">—</dd>
+        <dt>Estado del actualizador</dt><dd id="v-configured">—</dd>
+        <dt>Última comprobación</dt><dd id="v-lastcheck">Nunca</dd>
+      </dl>
+    </div>
+
+    <div class="actions">
+      <button class="btn primary" id="btnCheck">Buscar actualizaciones</button>
+      <button class="btn" id="btnInstall" disabled>Descargar e instalar</button>
+      <button class="btn" id="btnRestart" disabled>Reiniciar ahora</button>
+      <button class="btn" id="btnRetry" style="display:none">Reintentar</button>
+      <button class="btn" id="btnLater">Más tarde</button>
+    </div>
+
+    <script>
+      const T = window.__TAURI__;
+      const $ = (id) => document.getElementById(id);
+      const dot = $("dot"), stateLabel = $("stateLabel"), msg = $("msg");
+      const progress = $("progress"), bar = $("bar"), pctline = $("pctline");
+      const notes = $("notes"), errBox = $("errBox");
+      const btnCheck = $("btnCheck"), btnInstall = $("btnInstall"),
+            btnRestart = $("btnRestart"), btnRetry = $("btnRetry"), btnLater = $("btnLater");
+
+      // state -> { label, tone(dot class) }
+      const STATES = {
+        CHECKING:        { label: "Comprobando…", tone: "busy" },
+        UP_TO_DATE:      { label: "Actualizado", tone: "ok" },
+        UPDATE_AVAILABLE:{ label: "Actualización disponible", tone: "warn" },
+        DOWNLOADING:     { label: "Descargando…", tone: "busy" },
+        READY_TO_INSTALL:{ label: "Lista para reiniciar", tone: "ok" },
+        INSTALLING:      { label: "Instalando…", tone: "busy" },
+        FAILED:          { label: "Error", tone: "err" },
+        OFFLINE:         { label: "Sin conexión", tone: "warn" },
+        NO_RELEASE:      { label: "Sin versiones publicadas", tone: "warn" },
+        NOT_CONFIGURED:  { label: "No configurado", tone: "warn" },
+        IDLE:            { label: "En espera", tone: "" },
+      };
+
+      let current = "IDLE";
+
+      function setState(state, message, extra = {}) {
+        current = state;
+        const s = STATES[state] || STATES.IDLE;
+        stateLabel.textContent = s.label;
+        dot.className = "dot" + (s.tone ? " " + s.tone : "");
+        if (message != null) msg.textContent = message;
+
+        // available version
+        if (extra.version) $("v-available").textContent = "v" + extra.version;
+        else if (state === "UP_TO_DATE") $("v-available").textContent = "—";
+
+        // notes
+        if (extra.notes) { notes.textContent = extra.notes; notes.classList.add("show"); }
+        else if (state === "UP_TO_DATE" || state === "IDLE") notes.classList.remove("show");
+
+        // error
+        if (extra.error) { errBox.textContent = extra.error; errBox.classList.add("show"); }
+        else errBox.classList.remove("show");
+
+        // progress visibility
+        if (state !== "DOWNLOADING") { progress.classList.remove("show"); pctline.classList.remove("show"); }
+
+        // button enablement. Once INSTALLING starts the process is handed to
+        // the OS installer and may terminate at any moment — nothing here is
+        // actionable any more, so lock the panel down.
+        const busy = ["CHECKING", "DOWNLOADING", "INSTALLING"].includes(state);
+        btnCheck.disabled = busy;
+        btnInstall.disabled = state !== "UPDATE_AVAILABLE";
+        btnRestart.disabled = state !== "READY_TO_INSTALL";
+        btnRetry.style.display = (state === "FAILED" || state === "OFFLINE" || state === "NO_RELEASE") ? "" : "none";
+        btnLater.disabled = state === "INSTALLING";
+      }
+
+      function stamp() {
+        $("v-lastcheck").textContent = new Date().toLocaleString();
+      }
+
+      async function loadVersion() {
+        if (!T || !T.core) return;
+        try {
+          const v = await T.core.invoke("get_version_info");
+          $("v-version").textContent = "v" + v.version;
+          $("v-build").textContent = v.build;
+          $("v-commit").textContent = v.commit;
+          $("v-date").textContent = v.build_date;
+          $("v-channel").textContent = v.channel;
+          $("v-env").textContent = v.environment;
+          $("v-configured").textContent = v.updater_configured ? "Configurado" : "No configurado";
+          if (!v.updater_configured) {
+            setState("NOT_CONFIGURED", v.environment === "development"
+              ? "El actualizador solo funciona en la app instalada (no en modo desarrollo)."
+              : "No hay endpoint o clave de actualización configurados en esta build.");
+          } else {
+            setState("IDLE", "Pulsa «Buscar actualizaciones» para comprobar.");
+          }
+        } catch (e) {
+          setState("FAILED", "No se pudo leer la información de versión.", { error: String(e) });
+        }
+      }
+
+      async function check() {
+        setState("CHECKING", "Buscando actualizaciones…");
+        try {
+          await T.core.invoke("updater_check");
+        } catch (e) {
+          setState("FAILED", "Fallo al comprobar.", { error: String(e) });
+        } finally {
+          stamp();
+        }
+      }
+
+      async function install() {
+        setState("DOWNLOADING", "Descargando…");
+        progress.classList.add("show"); pctline.classList.add("show");
+        try {
+          await T.core.invoke("updater_download_and_install");
+        } catch (e) {
+          setState("FAILED", "La instalación falló; tu versión actual sigue intacta.", { error: String(e) });
+        }
+      }
+
+      if (T && T.core) {
+        T.event.listen("core://update-status", (e) => {
+          const p = e.payload || {};
+          setState(p.state, p.message, { version: p.version, notes: p.notes, error: p.error });
+          // Mandatory update: user cannot postpone.
+          if (p.state === "UPDATE_AVAILABLE" && p.mandatory) {
+            btnLater.style.display = "none";
+            msg.textContent = (p.message || "") + "  ·  Actualización obligatoria" +
+              (p.mandatoryReason ? ": " + p.mandatoryReason : "");
+          } else if (p.state === "UPDATE_AVAILABLE") {
+            btnLater.style.display = "";
+          }
+          if (["UP_TO_DATE","UPDATE_AVAILABLE","OFFLINE","FAILED","NOT_CONFIGURED","NO_RELEASE"].includes(p.state)) stamp();
+        });
+        T.event.listen("core://update-progress", (e) => {
+          const p = e.payload || {};
+          progress.classList.add("show"); pctline.classList.add("show");
+          if (typeof p.percent === "number") {
+            bar.style.width = p.percent + "%";
+            pctline.textContent = p.percent + "%" + (p.total ? ` · ${(p.downloaded/1e6).toFixed(1)} / ${(p.total/1e6).toFixed(1)} MB` : "");
+          } else {
+            pctline.textContent = `${(p.downloaded/1e6).toFixed(1)} MB`;
+          }
+        });
+
+        btnCheck.addEventListener("click", check);
+        btnRetry.addEventListener("click", check);
+        btnInstall.addEventListener("click", install);
+        btnRestart.addEventListener("click", () => T.core.invoke("updater_relaunch"));
+        btnLater.addEventListener("click", () => {
+          const w = T.window.getCurrentWindow ? T.window.getCurrentWindow() : null;
+          if (w && w.hide) w.hide(); else if (w && w.close) w.close();
+        });
+
+        loadVersion();
+      } else {
+        setState("NOT_CONFIGURED", "Este panel solo funciona dentro de la app de escritorio.");
+      }
+    </script>
+  </body>
+</html>
