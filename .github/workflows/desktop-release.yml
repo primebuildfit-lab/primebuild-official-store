@@ -1,0 +1,101 @@
+# PrimeBuild Official Store — desktop release pipeline.
+#
+# Builds the signed Windows desktop app + updater artifacts and publishes them to
+# a GitHub Release that the in-app updater consumes.
+#
+# This is DISTRIBUTION-only automation: it never runs or changes Official Store
+# business logic, and it never touches the live Shopify store. It stays dormant
+# until a tag is pushed and the signing secrets below are set.
+#
+# ── How the updater finds a release ─────────────────────────────────────────
+# src-tauri/dist.config.json points the updater at:
+#   https://github.com/primebuildfit-lab/primebuild-saas/releases/latest/download/latest-store.json
+#
+# That repo is SHARED with other ecosystem apps, so the manifest is deliberately
+# named `latest-store.json` (not `latest.json`): `releases/latest/download/<name>`
+# resolves against the most recent release of the WHOLE repo, and a per-app name
+# keeps the Store from ever being served another app's manifest.
+#
+# ── Required repository secrets ─────────────────────────────────────────────
+#   TAURI_SIGNING_PRIVATE_KEY           contents of the minisign private key
+#   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  its password
+# Optional:
+#   RELEASE_DOWNLOAD_BASE               overrides the manifest download base URL
+#
+# The public key stays in src-tauri/tauri.conf.json; the private key must ONLY
+# ever live in these secrets — never in the repo.
+#
+# ── Releasing ───────────────────────────────────────────────────────────────
+#   git tag store-v0.1.0 && git push origin store-v0.1.0
+#
+# The release is created as a DRAFT on purpose: nothing becomes public until a
+# human reviews and publishes it. Note the updater only sees a PUBLISHED release
+# marked "latest" — a draft is invisible to it, which is the intended safety gate.
+
+name: desktop-release
+
+on:
+  push:
+    tags: ["store-v*"]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Version to build (e.g. 0.1.1). Leave blank to use current."
+        required: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.9
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: src-tauri
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Verify version is in sync
+        run: pnpm desktop:version --check
+
+      - name: Build, sign, and generate manifest
+        env:
+          TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
+          TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
+          # The manifest download URL must match the ACTUAL tag that was pushed
+          # (e.g. store-v0.1.0), not a bare v0.1.0.
+          RELEASE_DOWNLOAD_BASE: ${{ secrets.RELEASE_DOWNLOAD_BASE || format('https://github.com/{0}/releases/download/{1}', github.repository, github.ref_name) }}
+          PBOS_GIT_COMMIT: ${{ github.sha }}
+          PBOS_CHANNEL: stable
+          PBOS_BUILD_NUMBER: ${{ github.run_number }}
+        run: node scripts/desktop/release.mjs ${{ github.event.inputs.version }}
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          draft: true
+          name: PrimeBuild Official Store ${{ github.ref_name }}
+          # Tauri 2.x signs the NSIS installer itself: the updater downloads the
+          # *-setup.exe and verifies the sibling *-setup.exe.sig. Both must be
+          # attached, and latest-store.json must point at the .exe.
+          files: |
+            src-tauri/target/release/bundle/nsis/*-setup.exe
+            src-tauri/target/release/bundle/nsis/*-setup.exe.sig
+            src-tauri/target/release/bundle/latest-store.json
