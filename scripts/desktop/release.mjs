@@ -99,6 +99,9 @@ const fingerprint = {
   PBC_BUILD_DATE: new Date().toISOString().slice(0, 10),
   PBC_CHANNEL: process.env.PBC_CHANNEL || "stable",
   PBC_BUILD_NUMBER: process.env.PBC_BUILD_NUMBER || String(Date.now()),
+  // Se reenvía explícitamente: sin esto, `build.rs` cae en su detección por git
+  // y el SHA que CI quería sellar se pierde.
+  ...(process.env.PBC_GIT_COMMIT ? { PBC_GIT_COMMIT: process.env.PBC_GIT_COMMIT } : {}),
 };
 log(`Building desktop bundle${noSign ? " (installer only, unsigned)" : " (signed + updater artifacts)"}`);
 const configFlag = noSign ? "" : "--config src-tauri/tauri.release.conf.json";

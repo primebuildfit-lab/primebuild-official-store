@@ -9,18 +9,33 @@
 #
 # ── How the updater finds a release ─────────────────────────────────────────
 # src-tauri/dist.config.json points the updater at:
-#   https://github.com/primebuildfit-lab/primebuild-saas/releases/latest/download/latest-store.json
+#   https://github.com/primebuildfit-lab/primebuild-official-store/releases/download/store-latest/latest-store.json
 #
-# That repo is SHARED with other ecosystem apps, so the manifest is deliberately
-# named `latest-store.json` (not `latest.json`): `releases/latest/download/<name>`
-# resolves against the most recent release of the WHOLE repo, and a per-app name
-# keeps the Store from ever being served another app's manifest.
+# DOS decisiones deliberadas, ambas nacidas de averías reales:
+#
+#   · REPOSITORIO PROPIO. Antes se publicaba en `primebuildfit-lab/primebuild-saas`,
+#     compartido con otras apps del ecosistema. Cuando Eventra publicó después, el
+#     puntero `latest` del repositorio se movió y este canal empezó a devolver 404.
+#
+#   · ETIQUETA FIJA `store-latest`, nunca `releases/latest/download/...`. Con
+#     `releases/latest`, "la última" es la de cualquier producto que haya publicado
+#     más recientemente. La etiqueta fija no puede ser desviada por nadie.
+#
+# El manifiesto se llama `latest-store.json` y no `latest.json` por la misma razón
+# histórica; se conserva el nombre porque cambiarlo rompería a las instalaciones
+# existentes, que ya consultan esa URL exacta.
 #
 # ── Required repository secrets ─────────────────────────────────────────────
 #   TAURI_SIGNING_PRIVATE_KEY           contents of the minisign private key
-#   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  its password
+#                                       (~/.tauri/primebuild-store.key, 71F1CFC47554874F)
+#   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  its password ("" si la clave no tiene)
 # Optional:
 #   RELEASE_DOWNLOAD_BASE               overrides the manifest download base URL
+#
+# SIN ESOS DOS SECRETS EL WORKFLOW NO PUEDE PASAR: `scripts/desktop/release.mjs`
+# aborta a propósito en el preflight de firma antes de compilar nada. Es la causa
+# del único run existente (store-v0.1.3, conclusion=failure, paso "Build, sign,
+# and generate manifest").
 #
 # The public key stays in src-tauri/tauri.conf.json; the private key must ONLY
 # ever live in these secrets — never in the repo.
@@ -82,9 +97,14 @@ jobs:
           # The manifest download URL must match the ACTUAL tag that was pushed
           # (e.g. store-v0.1.0), not a bare v0.1.0.
           RELEASE_DOWNLOAD_BASE: ${{ secrets.RELEASE_DOWNLOAD_BASE || format('https://github.com/{0}/releases/download/{1}', github.repository, github.ref_name) }}
-          PBOS_GIT_COMMIT: ${{ github.sha }}
-          PBOS_CHANNEL: stable
-          PBOS_BUILD_NUMBER: ${{ github.run_number }}
+          # OJO CON EL PREFIJO: `src-tauri/build.rs` lee PBC_*, no PBOS_*. Con el
+          # prefijo equivocado estas tres variables se ignoraban en silencio y el
+          # binario salía sellado con "local" como número de compilación y con el
+          # commit deducido, no con el de CI. No es un fallo que rompa el build:
+          # es peor, produce un binario mal etiquetado sin avisar.
+          PBC_GIT_COMMIT: ${{ github.sha }}
+          PBC_CHANNEL: stable
+          PBC_BUILD_NUMBER: ${{ github.run_number }}
         run: node scripts/desktop/release.mjs ${{ github.event.inputs.version }}
 
       - name: Publish versioned GitHub Release
