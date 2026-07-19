@@ -45,6 +45,7 @@
       "nsis": {
         "installMode": "currentUser",
         "startMenuFolder": "Ecosistema\\PrimeBuild",
+        "installerHooks": "installer-hooks.nsh",
         "displayLanguageSelector": false
       }
     }
