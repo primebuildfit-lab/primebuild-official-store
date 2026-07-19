@@ -1,3 +1,21 @@
+> **⚠️ REGISTRO HISTÓRICO — el canal que describe ya no existe.**
+>
+> Este documento narra la puesta en marcha del auto-updater sobre el repositorio
+> **compartido** `primebuildfit-lab/primebuild-saas`, resolviendo por el puntero
+> `releases/latest`. Se conserva como evidencia de aquellas verificaciones y del
+> incidente que forzó el cambio: otra app publicó después y este canal empezó a
+> devolver 404.
+>
+> Lo que ha cambiado desde entonces:
+>
+> - Repositorio propio y **etiqueta fija**, no `releases/latest` (migración previa).
+> - El canal ya no se escribe en ningún archivo suelto: la definición canónica es
+>   `updater-channel.json`, y de ella derivan `dist.config.json`, el script de
+>   publicación y el workflow de CI (`PB-FIX-003`).
+>
+> Canal vigente y runbook: [`docs/RELEASE_SETUP.md`](./docs/RELEASE_SETUP.md).
+> Ninguna URL de este documento debe copiarse a una configuración.
+
 # PrimeBuild Official Store — Auto-Updater oficial de Tauri
 
 **Fecha:** 2026-07-18

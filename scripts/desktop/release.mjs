@@ -33,6 +33,7 @@ import { existsSync, rmSync, readFileSync, writeFileSync, readdirSync, statSync 
 import { join, dirname, basename } from "node:path";
 import { fileURLToPath } from "node:url";
 import { createHash } from "node:crypto";
+import { channel, downloadBase, releaseTag, repoSlug, updaterEndpoint } from "./channel.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..", "..");
 const bundleDir = join(root, "src-tauri", "target", "release", "bundle");
@@ -134,9 +135,8 @@ if (!noSign) {
 
   // ---- 7. Manifest (latest.json) -----------------------------------------
   const signature = readFileSync(join(nsisDir, sig), "utf8").trim();
-  const base =
-    process.env.RELEASE_DOWNLOAD_BASE ||
-    `https://github.com/primebuildfit-lab/primebuild-official-store/releases/download/store-v${ver}`;
+  // The channel is defined once, in updater-channel.json. Never write it here.
+  const base = process.env.RELEASE_DOWNLOAD_BASE || downloadBase(ver);
   const notes = resolveNotes(ver);
   const manifest = {
     version: ver,
@@ -146,11 +146,11 @@ if (!noSign) {
       "windows-x86_64": { signature, url: `${base}/${githubAssetName(installer)}` },
     },
   };
-  // Named latest-store.json, NOT latest.json: this repo is shared with other
-  // ecosystem apps, and `releases/latest/download/<name>` resolves against the
-  // most recent release in the WHOLE repo. A per-app manifest name keeps the
-  // Store from ever being served another app's manifest.
-  manifestPath = join(bundleDir, "latest-store.json");
+  // The manifest carries a per-app name (see updater-channel.json), never a
+  // bare latest.json: a shared repository resolves `releases/latest/download/
+  // <name>` against the most recent release in the WHOLE repo, so a generic
+  // name lets another app's manifest be served in this app's place.
+  manifestPath = join(bundleDir, channel.manifestName);
   writeFileSync(manifestPath, JSON.stringify(manifest, null, 2) + "\n");
   ok(`Manifest: ${manifestPath}`);
 }
@@ -163,14 +163,15 @@ for (const a of [installerPath]) console.log(`  ${sha256(a)}  ${basename(a)}`);
 log(`Done. Release v${ver} built at ${bundleDir}`);
 if (!noSign && manifestPath) {
   console.log(
-    "\nNext step to publish (normally done by CI on a store-v* tag):\n" +
-      `  1. Create a GitHub Release tagged  store-v${ver}  on\n` +
-      "     primebuildfit-lab/primebuild-official-store\n" +
-      "  2. Upload the assets:  *-setup.exe, *-setup.exe.sig  and  latest-store.json\n" +
-      "  3. Re-point the FIXED tag `store-latest` at this latest-store.json:\n" +
-      "       gh release upload store-latest latest-store.json --clobber\n" +
-      "     The updater reads that fixed tag, NOT releases/latest, so another\n" +
-      "     app publishing can never steal this app's manifest."
+    `\nNext step to publish (normally done by CI on a ${channel.releaseTagPrefix}* tag):\n` +
+      `  1. Create a GitHub Release tagged  ${releaseTag(ver)}  on\n` +
+      `     ${repoSlug}\n` +
+      `  2. Upload the assets:  *${channel.artifactSuffix}, *${channel.artifactSuffix}.sig  and  ${channel.manifestName}\n` +
+      `  3. Re-point the FIXED tag \`${channel.channelTag}\` at this ${channel.manifestName}:\n` +
+      `       gh release upload ${channel.channelTag} ${channel.manifestName} --clobber\n` +
+      `     The installed app polls ${updaterEndpoint}\n` +
+      "     — a fixed tag, NOT releases/latest, so another app publishing can\n" +
+      "     never steal this app's manifest."
   );
 }
 

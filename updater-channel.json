@@ -1,0 +1,9 @@
+{
+  "$comment": "CANONICAL source of truth for the PrimeBuild Official Store update channel. Every other representation — dist.config.json, the release script, the CI workflow, the docs — must derive from this file or be validated against it by tests/desktop/updater-channel.test.ts. Never write the owner, repo, tag, manifest or download URL literally anywhere else. This channel belongs to PrimeBuild Official Store alone: it is not shared with PrimeBuild Internal OS, CoinOS or any other app. Same structure as the file of the same name in PrimeBuild Internal OS, deliberately: one pattern, two sets of data.",
+  "repoOwner": "primebuildfit-lab",
+  "repoName": "primebuild-official-store",
+  "channelTag": "store-latest",
+  "manifestName": "latest-store.json",
+  "releaseTagPrefix": "store-v",
+  "artifactSuffix": "-setup.exe"
+}
