@@ -126,7 +126,7 @@ fn open_logs_folder(app: tauri::AppHandle) -> Result<(), String> {
 
 /// Native "Ayuda" menu — the sanctioned, non-invasive trigger for the technical
 /// update panel. It adds a standard OS menu bar to the shell; it does NOT touch
-/// or restyle the PrimeBuild Core web application.
+/// or restyle the PrimeBuild Official Store web application.
 fn build_app_menu(app: &tauri::AppHandle) -> tauri::Result<Menu<tauri::Wry>> {
     let check = MenuItem::with_id(app, "pbc_check_updates", "Buscar actualizaciones…", true, None::<&str>)?;
     let panel = MenuItem::with_id(app, "pbc_update_panel", "Panel de actualización", true, None::<&str>)?;

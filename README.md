@@ -11,10 +11,18 @@ PrimeBuild**. It is a **read-only** live view of the `primebuildfit` storefront
 - **Canales y marketing** — an honest overview of external sales channels (Google Merchant, Meta, Pinterest, SEO, apps) that links out to the Shopify admin.
 - **Sistema** — connection/environment settings and live status.
 
-It is **not** CoinOS, **not** PrimeBuild Internal OS, **not** Eventra, **not**
-Partnera, **not** PrimeBuild Core, and **not** the live Shopify rewards backend
-(`priembuild-core`). It is its own app. The store-management surface used to live
-inside PrimeBuild Internal OS; it was extracted into this dedicated console.
+It is its own app. The store-management surface used to live inside PrimeBuild
+Internal OS; it was extracted into this dedicated console.
+
+Three neighbouring systems are easy to confuse with it, and with each other:
+
+| System | What it is | Relationship to this app |
+|---|---|---|
+| **PrimeBuild Internal OS** | The internal operations console for the PrimeBuild brand — company, not store | Separate app. It links out to this one |
+| **CoinOS** | The group's financial-infrastructure OS. **Formerly named PrimeBuild Core** — the name changed, the system did not | Unrelated |
+| **`priembuild-core`** | The live Shopify rewards backend behind `primebuildfit.com`. Despite the similar name, **it is not CoinOS** | Unrelated. This console reads the PB Coins programme it powers, read-only |
+
+This console is also **not** Eventra and **not** Partnera.
 
 It runs both as a **web app** and as a **native Windows desktop app** (Tauri 2),
 which can **rebuild itself automatically** via the auto-rebuild pipeline

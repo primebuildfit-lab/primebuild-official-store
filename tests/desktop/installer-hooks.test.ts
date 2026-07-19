@@ -18,9 +18,9 @@ const PRODUCT = "PrimeBuild Official Store";
 const CURRENT_FOLDER = "Ecosistema\\PrimeBuild";
 
 /** Every path this script passes to Delete. */
-const deletedPaths = [...hooks.matchAll(/PB_RemoveLegacyShortcut\s+\S+\s+"([^"]+)"/g)].map(
-  (m) => m[1],
-);
+const deletedPaths = [...hooks.matchAll(/PB_RemoveLegacyShortcut\s+\S+\s+"([^"]+)"/g)]
+  .map((m) => m[1])
+  .filter((p): p is string => Boolean(p));
 
 describe("wiring", () => {
   it("is registered as the NSIS installer hook", () => {
