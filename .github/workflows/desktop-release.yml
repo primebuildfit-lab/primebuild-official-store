@@ -87,10 +87,10 @@ jobs:
           PBOS_BUILD_NUMBER: ${{ github.run_number }}
         run: node scripts/desktop/release.mjs ${{ github.event.inputs.version }}
 
-      - name: Publish GitHub Release
+      - name: Publish versioned GitHub Release
         uses: softprops/action-gh-release@v2
         with:
-          draft: true
+          draft: false
           name: PrimeBuild Official Store ${{ github.ref_name }}
           # Tauri 2.x signs the NSIS installer itself: the updater downloads the
           # *-setup.exe and verifies the sibling *-setup.exe.sig. Both must be
@@ -99,3 +99,22 @@ jobs:
             src-tauri/target/release/bundle/nsis/*-setup.exe
             src-tauri/target/release/bundle/nsis/*-setup.exe.sig
             src-tauri/target/release/bundle/latest-store.json
+
+      # The updater reads a FIXED tag (store-latest), never `releases/latest`, so
+      # publishing another app can never steal this app's manifest. This step
+      # re-points that fixed tag at the manifest just published.
+      - name: Update the store-latest update channel
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          manifest=src-tauri/target/release/bundle/latest-store.json
+          test -f "$manifest" || { echo "manifest missing"; exit 1; }
+          if gh release view store-latest >/dev/null 2>&1; then
+            gh release upload store-latest "$manifest" --clobber
+          else
+            gh release create store-latest "$manifest" \
+              --title "PrimeBuild Official Store — canal de actualización" \
+              --notes "Canal estable del auto-updater. Este release solo contiene latest-store.json y siempre apunta a la última versión publicada. No descargues nada de aquí: los instaladores viven en los releases store-v*."
+          fi

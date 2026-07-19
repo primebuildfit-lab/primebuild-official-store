@@ -133,7 +133,7 @@ if (!noSign) {
   const signature = readFileSync(join(nsisDir, sig), "utf8").trim();
   const base =
     process.env.RELEASE_DOWNLOAD_BASE ||
-    `https://github.com/primebuildfit-lab/primebuild-saas/releases/download/store-v${ver}`;
+    `https://github.com/primebuildfit-lab/primebuild-official-store/releases/download/store-v${ver}`;
   const notes = resolveNotes(ver);
   const manifest = {
     version: ver,
@@ -160,13 +160,14 @@ for (const a of [installerPath]) console.log(`  ${sha256(a)}  ${basename(a)}`);
 log(`Done. Release v${ver} built at ${bundleDir}`);
 if (!noSign && manifestPath) {
   console.log(
-    "\nNext (human) step to publish:\n" +
+    "\nNext step to publish (normally done by CI on a store-v* tag):\n" +
       `  1. Create a GitHub Release tagged  store-v${ver}  on\n` +
-      "     primebuildfit-lab/primebuild-saas\n" +
-      "  2. Upload BOTH assets:  the *-setup.exe  and  latest-store.json\n" +
-      "  3. Mark it as the LATEST release — the updater endpoint resolves\n" +
-      "     releases/latest/download/latest-store.json, which follows the most\n" +
-      "     recent release of the whole repo (shared with other ecosystem apps)."
+      "     primebuildfit-lab/primebuild-official-store\n" +
+      "  2. Upload the assets:  *-setup.exe, *-setup.exe.sig  and  latest-store.json\n" +
+      "  3. Re-point the FIXED tag `store-latest` at this latest-store.json:\n" +
+      "       gh release upload store-latest latest-store.json --clobber\n" +
+      "     The updater reads that fixed tag, NOT releases/latest, so another\n" +
+      "     app publishing can never steal this app's manifest."
   );
 }
 
