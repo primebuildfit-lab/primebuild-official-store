@@ -1,6 +1,6 @@
 {
   "name": "primebuild-official-store",
-  "version": "0.1.0",
+  "version": "0.1.3",
   "private": true,
   "description": "PrimeBuild Official Store — the official administration console for the PrimeBuild (primebuildfit) Shopify store: a read-only live view of the storefront (catalog, collections, orders, customers, discounts and the PB Coins rewards program). Independent app; packaged as a self-rebuilding Tauri desktop app. Belongs only to PrimeBuild — not CoinOS, PrimeBuild Internal OS, Eventra or Partnera.",
   "type": "module",
