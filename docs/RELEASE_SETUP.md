@@ -66,12 +66,17 @@ cd D:\empresas\WorkspaceExtra\PrimeBuildOfficialStore
 | `TAURI_SIGNING_PRIVATE_KEY` | contenido completo de `C:\Users\carlo\.tauri\primebuild-store.key` |
 | `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` | la contraseña de esa clave |
 
-O por CLI:
+O por CLI (PowerShell **no** soporta `<` para redirigir ficheros; usa tubería):
 
 ```powershell
 $gh = "C:\Program Files\GitHub CLI\gh.exe"
-& $gh secret set TAURI_SIGNING_PRIVATE_KEY --repo primebuildfit-lab/primebuild-official-store < "$env:USERPROFILE\.tauri\primebuild-store.key"
-& $gh secret set TAURI_SIGNING_PRIVATE_KEY_PASSWORD --repo primebuildfit-lab/primebuild-official-store
+$repo = "primebuildfit-lab/primebuild-official-store"
+
+# la clave, por tubería
+Get-Content "$env:USERPROFILE\.tauri\primebuild-store.key" -Raw | & $gh secret set TAURI_SIGNING_PRIVATE_KEY --repo $repo
+
+# la contraseña: te la pedirá por pantalla (no queda en el historial)
+& $gh secret set TAURI_SIGNING_PRIVATE_KEY_PASSWORD --repo $repo
 ```
 
 > ⚠️ **`~/.tauri/primebuild-store.key` es el único punto de fallo irreversible.** Es lo
