@@ -1,58 +1,58 @@
 import type { Metadata } from "next";
-import { ModuleHeader, StoreSourceBadge } from "@/components/os/module-header";
-import { Badge, DataTable, StoreNotConnected, type BadgeKind, type Column } from "@/components/ds";
+import { PageHeader, Panel, StoreNotConnected } from "@/components/ds";
+import { StoreSourceBadge } from "@/components/os/module-header";
+import { ProductsCatalog } from "@/components/os/products-catalog";
 import { loadStore } from "@/server/integrations/store/load";
-import { listProducts, type StoreProduct } from "@/server/integrations/store/store.service";
+import { listProducts } from "@/server/integrations/store/store.service";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Productos · Store" };
+export const metadata: Metadata = { title: "Productos" };
 
-const STATUS_KIND: Record<string, BadgeKind> = {
-  ACTIVE: "healthy",
-  DRAFT: "warning",
-  ARCHIVED: "neutral",
-};
-
-export default async function StoreProductsPage() {
+/**
+ * Productos (PBOS-001 · ORDEN 3) — the canonical product catalog. It reads only
+ * real data and keeps three planes distinct: the internal product, its Shopify
+ * publication and inventory. There is no internal catalog store yet, so the rows
+ * are a read-only projection of Shopify and creating/editing is disabled — this
+ * console never writes to Shopify.
+ */
+export default async function ProductsPage() {
   const res = await loadStore(() => listProducts(100));
-  const rows = res.data ?? [];
-
-  const columns: Column<StoreProduct>[] = [
-    { key: "title", header: "Producto", render: (r) => <span className="font-medium">{r.title}</span> },
-    {
-      key: "status",
-      header: "Estado",
-      render: (r) => <Badge kind={STATUS_KIND[r.status] ?? "neutral"}>{r.status}</Badge>,
-    },
-    {
-      key: "inv",
-      header: "Inventario",
-      align: "right",
-      render: (r) => (r.totalInventory == null ? "—" : String(r.totalInventory)),
-    },
-    { key: "price", header: "Precio", align: "right", render: (r) => `${r.price} ${r.currency}` },
-  ];
+  const products = res.data ?? [];
 
   return (
     <div>
-      <ModuleHeader id="store-products">
+      <PageHeader
+        eyebrow="Catálogo"
+        title="Productos"
+        description="El catálogo canónico de productos y variantes."
+        icon="box"
+      >
         <StoreSourceBadge connected={res.connected} error={res.error} />
-      </ModuleHeader>
+        <button
+          type="button"
+          disabled
+          title="Requiere el catálogo interno con persistencia. Aún no existe; Official Store nunca escribe en Shopify."
+          className="inline-flex cursor-not-allowed items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs font-medium text-faint opacity-60"
+        >
+          Añadir producto
+        </button>
+      </PageHeader>
+
+      <Panel className="mb-6" icon="layers" title="Tres planos distintos, solo lectura">
+        <p className="text-sm text-muted">
+          Un <span className="font-medium text-foreground">producto interno</span> puede existir sin
+          publicarse; su <span className="font-medium text-foreground">publicación en Shopify</span>{" "}
+          y su <span className="font-medium text-foreground">inventario</span> son planos separados.
+          Hoy no hay catálogo interno con almacenamiento: las filas son una proyección de solo
+          lectura de Shopify y la edición está deshabilitada. Nada se inventa y nada se escribe en
+          la tienda.
+        </p>
+      </Panel>
+
       {!res.connected ? (
         <StoreNotConnected error={res.error} />
       ) : (
-        <DataTable
-          columns={columns}
-          rows={rows}
-          getKey={(r) => r.id}
-          emptyMessage="La tienda no tiene productos publicados."
-          caption={
-            <>
-              <span>Solo lectura · Admin API</span>
-              <span className="tabular-nums">{rows.length} productos</span>
-            </>
-          }
-        />
+        <ProductsCatalog products={products} />
       )}
     </div>
   );
