@@ -81,6 +81,13 @@ export function OsSidebar() {
                       )}
                     />
                     <span className="truncate">{item.label}</span>
+                    {item.status === "planned" ? (
+                      <span
+                        className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-faint/60"
+                        title="Espacio definido — aún no construido"
+                        aria-label="Planificado"
+                      />
+                    ) : null}
                   </Link>
                 );
               })}

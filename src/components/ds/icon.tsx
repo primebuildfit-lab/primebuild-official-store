@@ -23,6 +23,26 @@ export type IconName =
   | "megaphone"
   | "settings"
   | "activity"
+  // commerce-admin modules (PBOS rebuild)
+  | "file"
+  | "undo"
+  | "tag"
+  | "bolt"
+  | "truck"
+  | "clipboard"
+  | "clipboard-check"
+  | "inbox"
+  | "warehouse"
+  | "transfer"
+  | "refresh"
+  | "palette"
+  | "edit"
+  | "send"
+  | "dollar"
+  | "eye"
+  | "upload"
+  | "plug"
+  | "help"
   // ui / actions
   | "search"
   | "command"
@@ -119,6 +139,126 @@ const PATHS: Record<IconName, React.ReactNode> = {
     </>
   ),
   activity: <path d="M3 12h3l3 8 4-16 3 8h5" />,
+  file: (
+    <>
+      <path d="M13 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8l-7-5Z" />
+      <path d="M13 3v5h5" />
+    </>
+  ),
+  undo: (
+    <>
+      <path d="M9 14 4 9l5-5" />
+      <path d="M4 9h11a5 5 0 0 1 0 10h-6" />
+    </>
+  ),
+  tag: (
+    <>
+      <path d="M3 3h7l11 11-7 7L3 10V3Z" />
+      <circle cx="7.5" cy="7.5" r="1.4" fill="currentColor" stroke="none" />
+    </>
+  ),
+  bolt: <path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z" />,
+  truck: (
+    <>
+      <path d="M3 6h11v9H3z" />
+      <path d="M14 9h4l3 3v3h-7z" />
+      <circle cx="7" cy="18" r="1.6" />
+      <circle cx="17.5" cy="18" r="1.6" />
+    </>
+  ),
+  clipboard: (
+    <>
+      <rect x="5" y="4" width="14" height="17" rx="2" />
+      <rect x="9" y="2.5" width="6" height="3.5" rx="1" />
+    </>
+  ),
+  "clipboard-check": (
+    <>
+      <rect x="5" y="4" width="14" height="17" rx="2" />
+      <rect x="9" y="2.5" width="6" height="3.5" rx="1" />
+      <path d="m9 13 2 2 4-4" />
+    </>
+  ),
+  inbox: (
+    <>
+      <path d="M3 12 6 5h12l3 7v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6Z" />
+      <path d="M3 12h5l1.5 2.5h5L16 12h5" />
+    </>
+  ),
+  warehouse: (
+    <>
+      <path d="M3 21V8l9-4 9 4v13" />
+      <path d="M7 21v-7h10v7" />
+      <path d="M7 14h10" />
+    </>
+  ),
+  transfer: (
+    <>
+      <path d="M4 8h13l-3-3" />
+      <path d="M20 16H7l3 3" />
+    </>
+  ),
+  refresh: (
+    <>
+      <path d="M3 12a9 9 0 0 1 15-6.7L21 8" />
+      <path d="M21 3v5h-5" />
+      <path d="M21 12a9 9 0 0 1-15 6.7L3 16" />
+      <path d="M3 21v-5h5" />
+    </>
+  ),
+  palette: (
+    <>
+      <path d="M12 3a9 9 0 1 0 0 18c1 0 1.5-.8 1.5-1.5 0-1 .8-1.5 1.5-1.5H18a3 3 0 0 0 3-3 8 8 0 0 0-9-9Z" />
+      <circle cx="7.5" cy="10.5" r="1" fill="currentColor" stroke="none" />
+      <circle cx="12" cy="7.5" r="1" fill="currentColor" stroke="none" />
+      <circle cx="16.5" cy="10.5" r="1" fill="currentColor" stroke="none" />
+    </>
+  ),
+  edit: (
+    <>
+      <path d="M4 20h4L19 9l-4-4L4 16v4Z" />
+      <path d="m14.5 5.5 4 4" />
+    </>
+  ),
+  send: (
+    <>
+      <path d="m22 2-7 20-4-9-9-4 20-7Z" />
+      <path d="M22 2 11 13" />
+    </>
+  ),
+  dollar: (
+    <>
+      <line x1="12" y1="2" x2="12" y2="22" />
+      <path d="M17 6.5A4 4 0 0 0 13 4h-2a3.5 3.5 0 0 0 0 7h2a3.5 3.5 0 0 1 0 7h-2a4 4 0 0 1-4-2.5" />
+    </>
+  ),
+  eye: (
+    <>
+      <path d="M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7-10-7-10-7Z" />
+      <circle cx="12" cy="12" r="3" />
+    </>
+  ),
+  upload: (
+    <>
+      <path d="M12 15V3" />
+      <path d="m7 8 5-5 5 5" />
+      <path d="M4 15v3a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3" />
+    </>
+  ),
+  plug: (
+    <>
+      <path d="M12 22v-5" />
+      <path d="M9 7V3M15 7V3" />
+      <path d="M7 7h10v4a5 5 0 0 1-10 0V7Z" />
+    </>
+  ),
+  help: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M9.5 9.5a2.5 2.5 0 1 1 3.5 2.3c-.8.4-1 .8-1 1.7" />
+      <circle cx="12" cy="16.5" r="0.6" fill="currentColor" stroke="none" />
+    </>
+  ),
   search: (
     <>
       <circle cx="11" cy="11" r="7" />

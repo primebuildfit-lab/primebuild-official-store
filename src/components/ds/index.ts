@@ -24,6 +24,7 @@ export { KpiCard, TrendDelta } from "./kpi-card";
 export { Sparkline, MiniBars, DonutStat, type BarDatum } from "./charts";
 export { DataTable, type Column } from "./data-table";
 export { StoreNotConnected, NoData } from "./empty-state";
+export { PlannedSpace } from "./planned-space";
 export { SegmentedControl, type TabOption } from "./tabs";
 export { Modal } from "./modal";
 export { SearchInput, Toolbar } from "./search-input";

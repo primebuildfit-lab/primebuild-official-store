@@ -23,13 +23,13 @@ export const app = {
   name: "PrimeBuild Official Store",
   shortName: "Official Store",
   brand: "PrimeBuild",
-  tagline: "El Product Builder del canal comercial de PrimeBuild",
+  tagline: "El Commerce Admin de PrimeBuild",
   description:
-    "Entorno desde el que se diseña, configura, administra, analiza, publica y evoluciona PrimeBuild Store: catálogo, colecciones, pedidos, clientes, descuentos y el programa PB Coins. No es la tienda ni el storefront: la tienda es el producto que se construye desde aquí. Hoy funciona en modo solo lectura. App independiente; nada se inventa.",
+    "El Product Builder / Commerce Admin de PrimeBuild: ventas, catálogo, compras por volumen, inventario propio, almacenes, operación, rendimiento, publicación y la tienda online de Shopify, desde un solo panel. No es la tienda ni el storefront: PrimeBuild Store es el producto que se construye desde aquí. Hoy las superficies de Shopify funcionan en solo lectura y los espacios operativos están definidos y se construyen orden por orden. App independiente; nada se inventa.",
   version: "0.1.0",
   /** Owner-facing note reinforcing that nothing here fabricates data. */
   honesty:
-    "Ninguna pantalla inventa datos: si la tienda no está conectada, se muestra un estado vacío honesto. Solo lectura: esta consola nunca escribe en la tienda.",
+    "Ninguna pantalla inventa datos: las superficies de Shopify son solo lectura y muestran un estado vacío honesto si la tienda no está conectada; los espacios aún no construidos lo dicen abiertamente en vez de simular datos.",
 } as const;
 
 export type AppIdentity = typeof app;
