@@ -1,4 +1,6 @@
 import { describe, it, expect } from "vitest";
+import { existsSync } from "node:fs";
+import { join } from "node:path";
 import { SECTIONS, SECTION_GROUPS, getSection, sectionsByGroup } from "@/config/sections";
 
 /**
@@ -98,5 +100,14 @@ describe("section registry", () => {
   it("groups partition the registry", () => {
     const grouped = SECTION_GROUPS.flatMap((g) => sectionsByGroup(g));
     expect(grouped.length).toBe(SECTIONS.length);
+  });
+
+  it("every nav route resolves to a real page (no broken links)", () => {
+    const base = join(process.cwd(), "src", "app", "(dashboard)");
+    for (const s of SECTIONS) {
+      const rel = s.href === "/" ? "" : s.href.replace(/^\//, "");
+      const page = join(base, rel, "page.tsx");
+      expect(existsSync(page), `missing page for ${s.href} (${page})`).toBe(true);
+    }
   });
 });

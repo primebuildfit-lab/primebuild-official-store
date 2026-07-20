@@ -33,9 +33,9 @@ export function OsSidebar() {
           PB
         </span>
         <span className="min-w-0">
-          <span className="block truncate text-sm font-bold tracking-tight">Official Store</span>
+          <span className="block text-sm font-bold leading-tight tracking-tight">{app.name}</span>
           <span className="block text-[0.62rem] uppercase tracking-[0.12em] text-faint">
-            PrimeBuild · Comercial
+            {app.adminSubtitle}
           </span>
         </span>
       </Link>

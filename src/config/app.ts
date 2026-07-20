@@ -23,6 +23,15 @@ export const app = {
   name: "PrimeBuild Official Store",
   shortName: "Official Store",
   brand: "PrimeBuild",
+  /**
+   * The canonical admin subtitle. The primary identity is shown, verbatim, as
+   * two lines: `name` then `adminSubtitle` (see src/config/identity.ts). It fixes
+   * the app as a commerce & inventory admin — never Internal OS, never a
+   * Shopify/Store admin, never the public store.
+   */
+  adminSubtitle: "Commerce & Inventory Admin",
+  /** What this application IS, for guards and tests (see identity.ts). */
+  classification: "product-builder-admin" as const,
   tagline: "El Commerce Admin de PrimeBuild",
   description:
     "El Product Builder / Commerce Admin de PrimeBuild: ventas, catálogo, compras por volumen, inventario propio, almacenes, operación, rendimiento, publicación y la tienda online de Shopify, desde un solo panel. No es la tienda ni el storefront: PrimeBuild Store es el producto que se construye desde aquí. Hoy las superficies de Shopify funcionan en solo lectura y los espacios operativos están definidos y se construyen orden por orden. App independiente; nada se inventa.",
