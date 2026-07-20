@@ -19,8 +19,8 @@ export function MetricCard({
   className,
 }: {
   label: string;
-  /** A pre-formatted value, or null/undefined when there is no measurement. */
-  value?: string | null;
+  /** A pre-formatted value node, or null/undefined when there is no measurement. */
+  value?: ReactNode;
   /** Optional unit shown after a measured value. */
   unit?: string;
   hint?: ReactNode;
