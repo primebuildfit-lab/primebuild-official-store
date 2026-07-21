@@ -84,11 +84,11 @@ describe("section registry", () => {
     }
   });
 
-  it("has at least one live space and several planned ones", () => {
+  it("is fully built: every space is live, none remains a planned stub", () => {
     const live = SECTIONS.filter((s) => s.status === "live");
     const planned = SECTIONS.filter((s) => s.status === "planned");
-    expect(live.length).toBeGreaterThan(0);
-    expect(planned.length).toBeGreaterThan(0);
+    expect(live.length).toBe(SECTIONS.length);
+    expect(planned.length).toBe(0);
   });
 
   it("lists Soporte exactly once and as the last entry", () => {

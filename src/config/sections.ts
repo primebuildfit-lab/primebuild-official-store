@@ -374,17 +374,10 @@ export const SECTIONS: Section[] = [
     href: "/operations/quality",
     icon: "shield",
     group: "Operación",
-    status: "planned",
-    order: "PBOS-AUDIT-001",
+    status: "live",
     summary: "Calidad, lotes y trazabilidad.",
     purpose:
       "Calidad y trazabilidad de extremo a extremo: lotes, seriales, caducidad, cuarentena, inspección y evidencia, con historial auditable de cada movimiento.",
-    scope: [
-      "Lotes y seriales",
-      "Caducidad y cuarentena",
-      "Inspección con evidencia",
-      "Trazabilidad auditable",
-    ],
   },
 
   // ── Rendimiento ──────────────────────────────────────────────────────────
