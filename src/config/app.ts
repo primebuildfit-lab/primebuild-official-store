@@ -19,6 +19,8 @@
  * nothing: when the product's data source is not connected, every screen shows an
  * honest empty state instead of inventing products, orders, customers or revenue.
  */
+import { PRODUCT_VERSION } from "./version";
+
 export const app = {
   name: "PrimeBuild Official Store",
   shortName: "Official Store",
@@ -35,7 +37,8 @@ export const app = {
   tagline: "El Commerce Admin de PrimeBuild",
   description:
     "El Product Builder / Commerce Admin de PrimeBuild: ventas, catálogo, compras por volumen, inventario propio, almacenes, operación, rendimiento, publicación y la tienda online de Shopify, desde un solo panel. No es la tienda ni el storefront: PrimeBuild Store es el producto que se construye desde aquí. Hoy las superficies de Shopify funcionan en solo lectura y los espacios operativos están definidos y se construyen orden por orden. App independiente; nada se inventa.",
-  version: "0.1.0",
+  /** Canonical product version (build-injected from package.json — see version.ts). */
+  version: PRODUCT_VERSION,
   /** Owner-facing note reinforcing that nothing here fabricates data. */
   honesty:
     "Ninguna pantalla inventa datos: las superficies de Shopify son solo lectura y muestran un estado vacío honesto si la tienda no está conectada; los espacios aún no construidos lo dicen abiertamente en vez de simular datos.",
