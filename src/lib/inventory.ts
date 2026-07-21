@@ -17,6 +17,7 @@ export type MovementType =
   | "transferencia-entrada"
   | "ajuste-positivo"
   | "ajuste-negativo"
+  | "devolucion"
   | "reversion";
 
 export type StockCondition = "ok" | "dañado" | "cuarentena";
