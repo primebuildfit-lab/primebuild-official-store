@@ -1,6 +1,6 @@
 [package]
 name = "primebuild-store-desktop"
-version = "0.1.5"
+version = "0.1.7"
 description = "PrimeBuild Official Store — Product Builder for PrimeBuild's commercial channel (desktop shell)"
 authors = ["PrimeBuild"]
 edition = "2021"
@@ -16,6 +16,9 @@ tauri-build = { version = "2", features = [] }
 
 [dependencies]
 tauri = { version = "2", features = [] }
+# Single-instance guard: a second launch focuses the existing window instead of
+# spawning a second main process (must be registered first — see lib.rs).
+tauri-plugin-single-instance = "2"
 tauri-plugin-window-state = "2"
 tauri-plugin-opener = "2"
 tauri-plugin-shell = "2"
