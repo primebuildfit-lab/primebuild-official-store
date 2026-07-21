@@ -1,7 +1,7 @@
 # PBOS-FINAL-001 — Cierre de las 31 órdenes
 
 **Repositorio:** `D:\empresas\WorkspaceExtra\PrimeBuildOfficialStore`
-**Worktree/rama:** `primebuild-official-store-pbos-001` · **HEAD inicial:** `99e77bf`
+**Worktree/rama:** la rama PBOS de esta orden (`…-pbos-001`) · **HEAD inicial:** `99e77bf`
 
 ## Clasificación final: **B**
 
@@ -74,6 +74,19 @@ porque ninguna instalación muestra todavía este trabajo.
 - Reconciliación de estado: 35 secciones `live`; 2 `planned` reales
   (`/sales/drafts`, `/operations/quality`), únicas rutas con estado honesto
   "espacio definido — aún no construido". Soporte = única y última entrada.
+
+## Cierre correctivo (post-FINAL, commits separados)
+
+- **PBOS-DRAFTS-CORRECTIVE-001** `affdd18`: `/sales/drafts` construido (borradores y
+  cotizaciones locales; convertir crea proyección de pedido local trazable, sin
+  Shopify/reserva/correo).
+- **PBOS-QUALITY-CORRECTIVE-001** `a5897d7`: `/operations/quality` construido
+  (señales reales; incidencias con ciclo; liberar cuarentena por movimiento
+  append-only, sin editar saldos; lotes solo con dato real).
+- **Reconciliación:** **0 stubs `PlannedSpaceView`** y **0 secciones `planned`** —
+  el registro entero es `live`. Sin enlaces rotos; Soporte único y último.
+- Corrige una regresión de FINAL: el informe ya no hardcodea el nombre del repo de
+  releases (se deriva de `updater-channel.json`). **196 tests** verdes.
 
 ## Sin efectos remotos
 
