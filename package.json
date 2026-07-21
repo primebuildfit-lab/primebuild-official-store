@@ -1,6 +1,6 @@
 {
   "name": "primebuild-official-store",
-  "version": "0.1.4",
+  "version": "0.1.5",
   "private": true,
   "description": "PrimeBuild Official Store — the Product Builder for PrimeBuild's commercial channel: the environment from which PrimeBuild Store (website, future app, catalog, checkout and every public channel) is designed, configured, administered, analysed, published and evolved. It is NOT the store, NOT the storefront and NOT what a customer uses; PrimeBuild Store is the product it builds, not a separate project. Built for the operator, never the customer. Current capability is read-only — declared architectural debt, see docs/architecture/PRODUCT_BUILDER.md. Independent app; packaged as a self-rebuilding Tauri desktop app. Belongs only to PrimeBuild — not CoinOS, PrimeBuild Internal OS, Eventra or Partnera.",
   "type": "module",
