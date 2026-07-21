@@ -600,6 +600,17 @@ export const SECTIONS: Section[] = [
       "Reglas y automatizaciones deterministas del builder: disparador, condiciones y acciones, con modo prueba sin efectos. Las acciones protegidas nunca se ejecutan sin autorización.",
   },
   {
+    id: "control-audit",
+    label: "Auditoría",
+    href: "/control/audit",
+    icon: "shield",
+    group: "Control",
+    status: "live",
+    summary: "Eventos reales, legibles y enmascarados.",
+    purpose:
+      "Auditoría comprensible construida desde eventos reales ya registrados en todos los espacios; texto enmascarado, fallos incluidos y exportación con capacidad.",
+  },
+  {
     id: "settings",
     label: "Configuración",
     href: "/settings",

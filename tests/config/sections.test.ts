@@ -10,7 +10,7 @@ import { SECTIONS, SECTION_GROUPS, getSection, sectionsByGroup } from "@/config/
  */
 describe("section registry", () => {
   it("defines the full commerce-admin surface", () => {
-    expect(SECTIONS.length).toBe(36);
+    expect(SECTIONS.length).toBe(37);
   });
 
   it("has unique ids and unique hrefs", () => {
