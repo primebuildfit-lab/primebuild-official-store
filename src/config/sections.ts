@@ -92,7 +92,12 @@ export const SECTIONS: Section[] = [
     summary: "Trabajo pendiente y avisos.",
     purpose:
       "Centro de tareas y alertas del operador: pendientes de compras, recepciones, inventario, publicación y calidad, con calendario y avisos priorizados. Nada se inventa: cada alerta nacerá de un hecho real del sistema.",
-    scope: ["Tareas y calendario", "Alertas priorizadas", "Pendientes por espacio", "Historial de actividad"],
+    scope: [
+      "Tareas y calendario",
+      "Alertas priorizadas",
+      "Pendientes por espacio",
+      "Historial de actividad",
+    ],
   },
 
   // ── Ventas ───────────────────────────────────────────────────────────────
@@ -142,7 +147,12 @@ export const SECTIONS: Section[] = [
     summary: "Devoluciones y reingresos.",
     purpose:
       "Gestión de devoluciones: autorización, recepción, inspección y decisión (reingreso a vendible, cuarentena o daño). La mercancía devuelta nunca vuelve a vendible automáticamente.",
-    scope: ["Autorización de devolución", "Recepción e inspección", "Reingreso o cuarentena", "Evidencia y trazabilidad"],
+    scope: [
+      "Autorización de devolución",
+      "Recepción e inspección",
+      "Reingreso o cuarentena",
+      "Evidencia y trazabilidad",
+    ],
   },
 
   // ── Catálogo ─────────────────────────────────────────────────────────────
@@ -179,7 +189,12 @@ export const SECTIONS: Section[] = [
     summary: "Precios, listas y mercados.",
     purpose:
       "Precios de venta, listas de precios por mercado y reglas de precio del catálogo. Se prepara aquí; publicar en la tienda es un paso separado y explícito.",
-    scope: ["Precio de venta por SKU", "Listas de precios por mercado", "Reglas y redondeo", "Vigencias"],
+    scope: [
+      "Precio de venta por SKU",
+      "Listas de precios por mercado",
+      "Reglas y redondeo",
+      "Vigencias",
+    ],
   },
   {
     id: "store-discounts",
@@ -225,7 +240,12 @@ export const SECTIONS: Section[] = [
     summary: "Catálogo de proveedores.",
     purpose:
       "Proveedores por SKU con supplier SKU, unidad de compra, cantidad por caja, MOQ, precio, moneda, tramos por cantidad, vigencia, lead time y condiciones. Con fuente y última verificación de cada dato.",
-    scope: ["Proveedores por SKU", "Unidad, caja y MOQ", "Tramos por cantidad", "Lead time y condiciones"],
+    scope: [
+      "Proveedores por SKU",
+      "Unidad, caja y MOQ",
+      "Tramos por cantidad",
+      "Lead time y condiciones",
+    ],
   },
   {
     id: "purchasing-orders",
@@ -238,7 +258,12 @@ export const SECTIONS: Section[] = [
     summary: "Órdenes de compra con estados reales.",
     purpose:
       "Órdenes de compra con estados reales (borrador, en revisión, aprobada, enviada, confirmada, en tránsito, parcial, recibida, con discrepancias, cerrada, cancelada). Crear o exportar una OC no significa que el proveedor la recibió.",
-    scope: ["Estados reales de la OC", "Aprobación", "Exportación verificable", "Vínculo con recepciones"],
+    scope: [
+      "Estados reales de la OC",
+      "Aprobación",
+      "Exportación verificable",
+      "Vínculo con recepciones",
+    ],
   },
   {
     id: "purchasing-receiving",
@@ -251,7 +276,12 @@ export const SECTIONS: Section[] = [
     summary: "Recepción de mercancía.",
     purpose:
       "Recepción con órdenes parciales, escaneo de barcode, esperado vs recibido, exceso o faltante, producto incorrecto, daños, cuarentena, inspección, lotes, seriales, caducidad y asignación de ubicación. La mercancía dañada o en cuarentena nunca pasa automáticamente a vendible.",
-    scope: ["Recepción parcial y por barcode", "Esperado vs recibido", "Daños y cuarentena", "Lotes, seriales y caducidad"],
+    scope: [
+      "Recepción parcial y por barcode",
+      "Esperado vs recibido",
+      "Daños y cuarentena",
+      "Lotes, seriales y caducidad",
+    ],
   },
 
   // ── Inventario ───────────────────────────────────────────────────────────
@@ -266,7 +296,12 @@ export const SECTIONS: Section[] = [
     summary: "Saldos por SKU, almacén y ubicación.",
     purpose:
       "Inventario propio y profundo: on hand, available, reserved, committed, incoming, damaged, quarantine, safety stock y available to sell, por SKU, almacén y ubicación. El saldo no se edita directamente: toda modificación produce un movimiento auditado.",
-    scope: ["On hand / available / reserved", "Incoming, damaged, quarantine", "Por SKU, almacén y ubicación", "Movimientos auditados"],
+    scope: [
+      "On hand / available / reserved",
+      "Incoming, damaged, quarantine",
+      "Por SKU, almacén y ubicación",
+      "Movimientos auditados",
+    ],
   },
   {
     id: "inventory-warehouses",
@@ -279,7 +314,12 @@ export const SECTIONS: Section[] = [
     summary: "Estructura física del almacén.",
     purpose:
       "Estructura de almacenes que crece de Almacén → Ubicación hasta Zona → Pasillo → Rack → Nivel → Bin, sin obligar a usar todos los niveles. Incluye recepción, staging, picking, packing, shipping, devoluciones, cuarentena, dañados, overflow y ubicaciones virtuales identificadas.",
-    scope: ["Jerarquía flexible de ubicaciones", "Zonas funcionales", "Ubicaciones virtuales", "Capacidad y estado"],
+    scope: [
+      "Jerarquía flexible de ubicaciones",
+      "Zonas funcionales",
+      "Ubicaciones virtuales",
+      "Capacidad y estado",
+    ],
   },
   {
     id: "inventory-transfers",
@@ -292,7 +332,12 @@ export const SECTIONS: Section[] = [
     summary: "Movimientos entre ubicaciones.",
     purpose:
       "Transferencias de stock entre almacenes y ubicaciones, con mercancía en tránsito y confirmación de recepción. Cada transferencia genera movimientos auditados.",
-    scope: ["Entre almacenes y ubicaciones", "Stock en tránsito", "Confirmación de recepción", "Movimientos auditados"],
+    scope: [
+      "Entre almacenes y ubicaciones",
+      "Stock en tránsito",
+      "Confirmación de recepción",
+      "Movimientos auditados",
+    ],
   },
   {
     id: "inventory-counts",
@@ -305,7 +350,12 @@ export const SECTIONS: Section[] = [
     summary: "Conteos cíclicos y ajustes.",
     purpose:
       "Conteos cíclicos y completos, y ajustes de inventario con motivo. Cada ajuste queda como movimiento auditado con su justificación: el saldo nunca se sobrescribe a mano.",
-    scope: ["Conteos cíclicos y completos", "Diferencias contadas", "Ajustes con motivo", "Traza de cada ajuste"],
+    scope: [
+      "Conteos cíclicos y completos",
+      "Diferencias contadas",
+      "Ajustes con motivo",
+      "Traza de cada ajuste",
+    ],
   },
   {
     id: "inventory-replenishment",
@@ -318,7 +368,12 @@ export const SECTIONS: Section[] = [
     summary: "Sugerencias de reposición.",
     purpose:
       "Reposición basada en safety stock, incoming y demanda: qué comprar y cuánto, listo para pasar a Compras por volumen. Las sugerencias se explican; no se compran solas.",
-    scope: ["Puntos de reposición", "Sugerencias explicables", "Enlace a compra rápida", "Sin compras automáticas"],
+    scope: [
+      "Puntos de reposición",
+      "Sugerencias explicables",
+      "Enlace a compra rápida",
+      "Sin compras automáticas",
+    ],
   },
 
   // ── Tienda online ────────────────────────────────────────────────────────
@@ -344,7 +399,12 @@ export const SECTIONS: Section[] = [
     summary: "Páginas y menús del storefront.",
     purpose:
       "Páginas, navegación y menús de la tienda pública, dentro de las capacidades reales de Shopify. Se edita aquí y se publica en un paso explícito y previsualizable.",
-    scope: ["Páginas de contenido", "Menús de navegación", "Preview antes de publicar", "Solo lo que Shopify soporta"],
+    scope: [
+      "Páginas de contenido",
+      "Menús de navegación",
+      "Preview antes de publicar",
+      "Solo lo que Shopify soporta",
+    ],
   },
   {
     id: "online-design",
@@ -357,7 +417,12 @@ export const SECTIONS: Section[] = [
     summary: "Diseño soportado del storefront.",
     purpose:
       "Diseño visual de la tienda dentro de lo que la integración real soporta. No afirma controlar temas completos ni checkout: solo lo administrable de forma verificable.",
-    scope: ["Diseño soportado", "Medios y marca", "Preview", "Sin promesas fuera de la integración real"],
+    scope: [
+      "Diseño soportado",
+      "Medios y marca",
+      "Preview",
+      "Sin promesas fuera de la integración real",
+    ],
   },
   {
     id: "online-content",
@@ -407,7 +472,12 @@ export const SECTIONS: Section[] = [
     summary: "Picking, packing y envío.",
     purpose:
       "Preparación de pedidos: picking, packing y envío, con estados reales. Marcar un envío no lo despacha realmente hasta ejecutarse con el transportista.",
-    scope: ["Picking y packing", "Empaque y etiquetas", "Estados de envío", "Sin fulfillment real automático"],
+    scope: [
+      "Picking y packing",
+      "Empaque y etiquetas",
+      "Estados de envío",
+      "Sin fulfillment real automático",
+    ],
   },
   {
     id: "operations-quality",
@@ -420,7 +490,12 @@ export const SECTIONS: Section[] = [
     summary: "Calidad, lotes y trazabilidad.",
     purpose:
       "Calidad y trazabilidad de extremo a extremo: lotes, seriales, caducidad, cuarentena, inspección y evidencia, con historial auditable de cada movimiento.",
-    scope: ["Lotes y seriales", "Caducidad y cuarentena", "Inspección con evidencia", "Trazabilidad auditable"],
+    scope: [
+      "Lotes y seriales",
+      "Caducidad y cuarentena",
+      "Inspección con evidencia",
+      "Trazabilidad auditable",
+    ],
   },
 
   // ── Rendimiento ──────────────────────────────────────────────────────────
@@ -435,7 +510,12 @@ export const SECTIONS: Section[] = [
     summary: "Métricas con fuente.",
     purpose:
       "Métricas de ventas, inventario, compras y operación, cada una con su fuente explícita. No hay métricas sin origen: nada se estima ni se inventa.",
-    scope: ["Ventas e inventario", "Compras y operación", "Cada métrica con fuente", "Sin cifras inventadas"],
+    scope: [
+      "Ventas e inventario",
+      "Compras y operación",
+      "Cada métrica con fuente",
+      "Sin cifras inventadas",
+    ],
   },
   {
     id: "performance-costs",
@@ -448,7 +528,12 @@ export const SECTIONS: Section[] = [
     summary: "Costos, landed cost y márgenes.",
     purpose:
       "Costos por producto, landed cost y márgenes reales, derivados de compras y recepciones. Los márgenes se calculan de datos reales, no de supuestos.",
-    scope: ["Costo por producto", "Landed cost", "Márgenes por SKU y pedido", "Derivado de datos reales"],
+    scope: [
+      "Costo por producto",
+      "Landed cost",
+      "Márgenes por SKU y pedido",
+      "Derivado de datos reales",
+    ],
   },
 
   // ── Publicación ──────────────────────────────────────────────────────────
@@ -476,7 +561,12 @@ export const SECTIONS: Section[] = [
     summary: "Publicar a la tienda pública.",
     purpose:
       "Publicación explícita y parcial hacia la tienda pública, con registro de qué se publicó, cuándo y quién. Publicar es siempre una acción deliberada y auditada.",
-    scope: ["Publicación explícita", "Publicación parcial", "Registro de publicación", "Permisos por acción"],
+    scope: [
+      "Publicación explícita",
+      "Publicación parcial",
+      "Registro de publicación",
+      "Permisos por acción",
+    ],
   },
 
   // ── Control ──────────────────────────────────────────────────────────────
@@ -491,7 +581,23 @@ export const SECTIONS: Section[] = [
     summary: "Shopify y otras integraciones.",
     purpose:
       "Integraciones del builder (Shopify y otras): conexión, autoridad por-campo y mappings, sincronización, webhooks, conflictos y logs. No hay sincronización bidireccional genérica; los conflictos nunca se resuelven en silencio.",
-    scope: ["Conexión y autoridad por-campo", "Mappings y sincronización", "Conflictos explícitos", "Logs y webhooks"],
+    scope: [
+      "Conexión y autoridad por-campo",
+      "Mappings y sincronización",
+      "Conflictos explícitos",
+      "Logs y webhooks",
+    ],
+  },
+  {
+    id: "control-automations",
+    label: "Automatizaciones",
+    href: "/control/automations",
+    icon: "sparkles",
+    group: "Control",
+    status: "live",
+    summary: "Reglas explicables y deterministas.",
+    purpose:
+      "Reglas y automatizaciones deterministas del builder: disparador, condiciones y acciones, con modo prueba sin efectos. Las acciones protegidas nunca se ejecutan sin autorización.",
   },
   {
     id: "settings",
