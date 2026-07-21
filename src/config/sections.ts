@@ -111,12 +111,10 @@ export const SECTIONS: Section[] = [
     href: "/sales/drafts",
     icon: "file",
     group: "Ventas",
-    status: "planned",
-    order: "PBOS-ORDERS-001",
+    status: "live",
     summary: "Pedidos borrador y cotizaciones.",
     purpose:
       "Borradores de pedido y cotizaciones antes de convertirse en pedidos reales. Preparar no cobra ni compromete inventario hasta confirmarse.",
-    scope: ["Borradores de pedido", "Cotizaciones", "Conversión a pedido", "Reservas al confirmar"],
   },
   {
     id: "store-customers",
