@@ -1,80 +1,49 @@
 import type { Metadata } from "next";
-import { ModuleHeader, StoreSourceBadge } from "@/components/os/module-header";
-import { Badge, DataTable, StoreNotConnected, type BadgeKind, type Column } from "@/components/ds";
+import { PageHeader, Panel } from "@/components/ds";
+import { StoreSourceBadge } from "@/components/os/module-header";
+import { OrdersInbox } from "@/components/os/orders-inbox";
 import { loadStore } from "@/server/integrations/store/load";
-import { listOrders, type StoreOrder } from "@/server/integrations/store/store.service";
+import { listOrders } from "@/server/integrations/store/store.service";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Pedidos · Store" };
+export const metadata: Metadata = { title: "Pedidos" };
 
-const FIN_KIND: Record<string, BadgeKind> = {
-  PAID: "healthy",
-  PARTIALLY_PAID: "warning",
-  PENDING: "warning",
-  REFUNDED: "neutral",
-  VOIDED: "critical",
-  PARTIALLY_REFUNDED: "warning",
-};
-
-const FULFIL_KIND: Record<string, BadgeKind> = {
-  FULFILLED: "healthy",
-  PARTIALLY_FULFILLED: "warning",
-  UNFULFILLED: "warning",
-  RESTOCKED: "neutral",
-};
-
-export default async function StoreOrdersPage() {
+/**
+ * Pedidos (PBOS-001 · ORDEN 19). The sales-order inbox. Shopify is a possible
+ * external source; importing is idempotent into a local projection. The order,
+ * payment, reservation, fulfillment, return and sync lifecycles are shown
+ * separately; payment is observed only; reservation is blocked without a policy;
+ * remote actions are blocked. No order is invented.
+ */
+export default async function OrdersPage() {
   const res = await loadStore(() => listOrders(50));
-  const rows = res.data ?? [];
-
-  const columns: Column<StoreOrder>[] = [
-    { key: "name", header: "Pedido", render: (r) => <span className="font-medium">{r.name}</span> },
-    { key: "customer", header: "Cliente", render: (r) => r.customer ?? "—" },
-    { key: "date", header: "Fecha", render: (r) => new Date(r.createdAt).toLocaleString("es") },
-    {
-      key: "fin",
-      header: "Pago",
-      render: (r) =>
-        r.financialStatus ? (
-          <Badge kind={FIN_KIND[r.financialStatus] ?? "neutral"}>{r.financialStatus}</Badge>
-        ) : (
-          "—"
-        ),
-    },
-    {
-      key: "ful",
-      header: "Cumplimiento",
-      render: (r) =>
-        r.fulfillmentStatus ? (
-          <Badge kind={FULFIL_KIND[r.fulfillmentStatus] ?? "neutral"}>{r.fulfillmentStatus}</Badge>
-        ) : (
-          "—"
-        ),
-    },
-    { key: "total", header: "Total", align: "right", render: (r) => `${r.total} ${r.currency}` },
-  ];
+  const connected = res.connected && res.data != null;
 
   return (
     <div>
-      <ModuleHeader id="store-orders">
-        <StoreSourceBadge connected={res.connected} error={res.error} />
-      </ModuleHeader>
-      {!res.connected ? (
-        <StoreNotConnected error={res.error} />
-      ) : (
-        <DataTable
-          columns={columns}
-          rows={rows}
-          getKey={(r) => r.id}
-          emptyMessage="La tienda no tiene pedidos recientes."
-          caption={
-            <>
-              <span>Solo lectura · Admin API</span>
-              <span className="tabular-nums">{rows.length} pedidos recientes</span>
-            </>
-          }
-        />
-      )}
+      <PageHeader
+        eyebrow="Ventas"
+        title="Pedidos"
+        description="Bandeja de pedidos con Shopify como posible origen externo."
+        icon="receipt"
+      >
+        <StoreSourceBadge connected={connected} error={res.error} />
+      </PageHeader>
+
+      <Panel className="mb-6" icon="shield" title="Estados separados, importación idempotente">
+        <p className="text-sm text-muted">
+          Los ciclos de{" "}
+          <span className="font-medium text-foreground">
+            pedido, pago, reserva, fulfillment, devolución y sincronización
+          </span>{" "}
+          se muestran por separado, nunca en uno solo. El estado de pago es{" "}
+          <span className="font-medium text-foreground">observado</span> y no se cambia manualmente
+          como verdad; importar un pedido de Shopify es idempotente; la reserva está bloqueada sin
+          política; y no se cancela ni se hace fulfillment remoto.
+        </p>
+      </Panel>
+
+      <OrdersInbox connected={connected} shopifyOrders={res.data ?? []} />
     </div>
   );
 }
