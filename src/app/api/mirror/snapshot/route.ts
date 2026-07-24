@@ -1,8 +1,9 @@
 import { NextResponse } from "next/server";
-import { readFileSync } from "node:fs";
-import { join } from "node:path";
 import { importSnapshot } from "@/server/mirror/sync.service";
 import type { MirrorCollectionRecord, ShopifyCatalogMirrorRecord } from "@/lib/catalog-mirror";
+// Import de módulo: el JSON queda EMPAQUETADO en el bundle del servidor, de
+// modo que la app instalada (standalone) también puede cargarlo.
+import snapshotData from "@/server/mirror/snapshot-2026-07-24.json";
 
 export const dynamic = "force-dynamic";
 
@@ -13,11 +14,7 @@ export const dynamic = "force-dynamic";
  */
 export async function POST() {
   try {
-    const raw = readFileSync(
-      join(process.cwd(), "src", "server", "mirror", "snapshot-2026-07-24.json"),
-      "utf8",
-    );
-    const snapshot = JSON.parse(raw) as {
+    const snapshot = snapshotData as unknown as {
       capturedAt: string;
       products: ShopifyCatalogMirrorRecord[];
       collections: MirrorCollectionRecord[];
