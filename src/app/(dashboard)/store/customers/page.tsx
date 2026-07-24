@@ -1,44 +1,36 @@
 import type { Metadata } from "next";
-import { ModuleHeader, StoreSourceBadge } from "@/components/os/module-header";
-import { DataTable, StoreNotConnected, type Column } from "@/components/ds";
-import { loadStore } from "@/server/integrations/store/load";
-import { listCustomers, type StoreCustomer } from "@/server/integrations/store/store.service";
+import { PageHeader, Panel } from "@/components/ds";
+import { CustomersBoard } from "@/components/os/customers-board";
 
-export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Clientes · Store" };
+export const metadata: Metadata = { title: "Clientes" };
 
-export default async function StoreCustomersPage() {
-  const res = await loadStore(() => listCustomers(50));
-  const rows = res.data ?? [];
-
-  const columns: Column<StoreCustomer>[] = [
-    { key: "name", header: "Cliente", render: (r) => <span className="font-medium">{r.name}</span> },
-    { key: "email", header: "Email", render: (r) => (r.email ? <span className="font-mono text-xs text-muted">{r.email}</span> : "—") },
-    { key: "orders", header: "Pedidos", align: "right", render: (r) => String(r.ordersCount) },
-    { key: "spent", header: "Gasto total", align: "right", render: (r) => `${r.amountSpent} ${r.currency}` },
-  ];
-
+/**
+ * Clientes (PBOS-001 · ORDEN 22). A minimal customer projection to operate orders,
+ * returns, fulfillment and support — not a CRM. Contact is masked, addresses are
+ * withheld unless needed, internal notes are separate, and mass export is blocked
+ * without a capability. Customers are projected only from real imported orders.
+ */
+export default function CustomersPage() {
   return (
     <div>
-      <ModuleHeader id="store-customers">
-        <StoreSourceBadge connected={res.connected} error={res.error} />
-      </ModuleHeader>
-      {!res.connected ? (
-        <StoreNotConnected error={res.error} />
-      ) : (
-        <DataTable
-          columns={columns}
-          rows={rows}
-          getKey={(r) => r.id}
-          emptyMessage="La tienda no tiene clientes todavía."
-          caption={
-            <>
-              <span>Solo lectura · Admin API</span>
-              <span className="tabular-nums">{rows.length} clientes</span>
-            </>
-          }
-        />
-      )}
+      <PageHeader
+        eyebrow="Ventas"
+        title="Clientes"
+        description="Proyección mínima para operar pedidos, devoluciones y soporte."
+        icon="users"
+      />
+
+      <Panel className="mb-6" icon="shield" title="Minimización, no un CRM">
+        <p className="text-sm text-muted">
+          Solo la proyección necesaria para operar: contactos{" "}
+          <span className="font-medium text-foreground">enmascarados</span>, direcciones ocultas
+          salvo operación autorizada, notas internas separadas, sin datos personales en logs y{" "}
+          <span className="font-medium text-foreground">exportación masiva bloqueada</span> sin
+          capacidad. No se inventa segmentación ni se escriben preferencias en Shopify sin contrato.
+        </p>
+      </Panel>
+
+      <CustomersBoard />
     </div>
   );
 }

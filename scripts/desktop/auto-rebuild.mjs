@@ -87,7 +87,8 @@ function runBuild() {
   const child = spawn(process.execPath, releaseArgs, {
     cwd: root,
     stdio: "inherit",
-    env: { ...process.env, PBOS_CHANNEL: process.env.PBOS_CHANNEL || "auto" },
+    // PBC_*, no PBOS_*: es el prefijo que lee src-tauri/build.rs.
+    env: { ...process.env, PBC_CHANNEL: process.env.PBC_CHANNEL || "auto" },
   });
 
   child.on("exit", (code) => {

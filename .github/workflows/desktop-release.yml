@@ -8,25 +8,52 @@
 # until a tag is pushed and the signing secrets below are set.
 #
 # ── How the updater finds a release ─────────────────────────────────────────
-# src-tauri/dist.config.json points the updater at:
-#   https://github.com/primebuildfit-lab/primebuild-saas/releases/latest/download/latest-store.json
+# EL CANAL SE DEFINE UNA SOLA VEZ, en `updater-channel.json` (raíz del repo):
+# propietario, repositorio, etiqueta fija, manifiesto y prefijo de release. Este
+# workflow NO los escribe: el paso "Load canonical update channel" ejecuta
+# `node scripts/desktop/channel.mjs --print` y exporta CHANNEL_* al entorno.
 #
-# That repo is SHARED with other ecosystem apps, so the manifest is deliberately
-# named `latest-store.json` (not `latest.json`): `releases/latest/download/<name>`
-# resolves against the most recent release of the WHOLE repo, and a per-app name
-# keeps the Store from ever being served another app's manifest.
+# Si necesitas cambiar el canal, edita ese archivo. Aquí no hay nada que tocar.
+# `tests/desktop/updater-channel.test.ts` falla si alguien vuelve a escribirlo a
+# mano en este workflow, en el script de publicación o en dist.config.json.
+#
+# DOS decisiones deliberadas, ambas nacidas de averías reales:
+#
+#   · REPOSITORIO PROPIO. Antes se publicaba en un repositorio compartido con
+#     otras apps del ecosistema. Cuando otra app publicó después, el puntero
+#     `latest` del repositorio se movió y este canal empezó a devolver 404.
+#
+#   · ETIQUETA FIJA, nunca `releases/latest/download/...`. Con `releases/latest`,
+#     "la última" es la de cualquier producto que haya publicado más
+#     recientemente. La etiqueta fija no puede ser desviada por nadie.
+#
+# El manifiesto lleva un nombre propio de la app y no `latest.json`, por la misma
+# razón histórica; se conserva porque cambiarlo rompería a las instalaciones
+# existentes, que ya consultan esa URL exacta.
+#
+# ÚNICA EXCEPCIÓN: el disparador `on.push.tags` de abajo repite el prefijo de
+# release literalmente. GitHub Actions no admite expresiones en `on:`, así que no
+# puede derivarse. Un test lo valida contra la fuente canónica.
 #
 # ── Required repository secrets ─────────────────────────────────────────────
 #   TAURI_SIGNING_PRIVATE_KEY           contents of the minisign private key
-#   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  its password
+#                                       (~/.tauri/primebuild-store.key, 71F1CFC47554874F)
+#   TAURI_SIGNING_PRIVATE_KEY_PASSWORD  its password ("" si la clave no tiene)
 # Optional:
 #   RELEASE_DOWNLOAD_BASE               overrides the manifest download base URL
+#
+# SIN ESOS DOS SECRETS EL WORKFLOW NO PUEDE PASAR: `scripts/desktop/release.mjs`
+# aborta a propósito en el preflight de firma antes de compilar nada. Es la causa
+# del único run existente (store-v0.1.3, conclusion=failure, paso "Build, sign,
+# and generate manifest").
 #
 # The public key stays in src-tauri/tauri.conf.json; the private key must ONLY
 # ever live in these secrets — never in the repo.
 #
 # ── Releasing ───────────────────────────────────────────────────────────────
-#   git tag store-v0.1.0 && git push origin store-v0.1.0
+#   Etiqueta con el prefijo declarado en `updater-channel.json`
+#   (releaseTagPrefix) seguido de la versión, y empuja esa etiqueta:
+#     git tag <releaseTagPrefix><versión> && git push origin <esa etiqueta>
 #
 # The release is created as a DRAFT on purpose: nothing becomes public until a
 # human reviews and publishes it. Note the updater only sees a PUBLISHED release
@@ -61,6 +88,14 @@ jobs:
           node-version: 20
           cache: pnpm
 
+      # The channel is defined ONCE, in updater-channel.json. This step exports
+      # it so no step below writes the repo, tag or manifest name by hand.
+      # Runs before the build so a malformed canonical file fails early and
+      # cheaply, instead of after a full Rust compile.
+      - name: Load canonical update channel
+        shell: bash
+        run: node scripts/desktop/channel.mjs --print >> "$GITHUB_ENV"
+
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
 
@@ -82,9 +117,14 @@ jobs:
           # The manifest download URL must match the ACTUAL tag that was pushed
           # (e.g. store-v0.1.0), not a bare v0.1.0.
           RELEASE_DOWNLOAD_BASE: ${{ secrets.RELEASE_DOWNLOAD_BASE || format('https://github.com/{0}/releases/download/{1}', github.repository, github.ref_name) }}
-          PBOS_GIT_COMMIT: ${{ github.sha }}
-          PBOS_CHANNEL: stable
-          PBOS_BUILD_NUMBER: ${{ github.run_number }}
+          # OJO CON EL PREFIJO: `src-tauri/build.rs` lee PBC_*, no PBOS_*. Con el
+          # prefijo equivocado estas tres variables se ignoraban en silencio y el
+          # binario salía sellado con "local" como número de compilación y con el
+          # commit deducido, no con el de CI. No es un fallo que rompa el build:
+          # es peor, produce un binario mal etiquetado sin avisar.
+          PBC_GIT_COMMIT: ${{ github.sha }}
+          PBC_CHANNEL: stable
+          PBC_BUILD_NUMBER: ${{ github.run_number }}
         run: node scripts/desktop/release.mjs ${{ github.event.inputs.version }}
 
       - name: Publish versioned GitHub Release
@@ -94,27 +134,28 @@ jobs:
           name: PrimeBuild Official Store ${{ github.ref_name }}
           # Tauri 2.x signs the NSIS installer itself: the updater downloads the
           # *-setup.exe and verifies the sibling *-setup.exe.sig. Both must be
-          # attached, and latest-store.json must point at the .exe.
+          # attached, and the manifest must point at the .exe.
           files: |
             src-tauri/target/release/bundle/nsis/*-setup.exe
             src-tauri/target/release/bundle/nsis/*-setup.exe.sig
-            src-tauri/target/release/bundle/latest-store.json
+            src-tauri/target/release/bundle/${{ env.CHANNEL_MANIFEST }}
 
-      # The updater reads a FIXED tag (store-latest), never `releases/latest`, so
-      # publishing another app can never steal this app's manifest. This step
-      # re-points that fixed tag at the manifest just published.
-      - name: Update the store-latest update channel
+      # The updater reads a FIXED tag, never `releases/latest`, so publishing
+      # another app can never steal this app's manifest. This step re-points
+      # that fixed tag at the manifest just published. Tag and manifest name
+      # come from updater-channel.json via the Load step — never written here.
+      - name: Update the fixed update channel
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         shell: bash
         run: |
           set -euo pipefail
-          manifest=src-tauri/target/release/bundle/latest-store.json
-          test -f "$manifest" || { echo "manifest missing"; exit 1; }
-          if gh release view store-latest >/dev/null 2>&1; then
-            gh release upload store-latest "$manifest" --clobber
+          manifest="src-tauri/target/release/bundle/${CHANNEL_MANIFEST}"
+          test -f "$manifest" || { echo "manifest missing: $manifest"; exit 1; }
+          if gh release view "$CHANNEL_TAG" >/dev/null 2>&1; then
+            gh release upload "$CHANNEL_TAG" "$manifest" --clobber
           else
-            gh release create store-latest "$manifest" \
+            gh release create "$CHANNEL_TAG" "$manifest" \
               --title "PrimeBuild Official Store — canal de actualización" \
-              --notes "Canal estable del auto-updater. Este release solo contiene latest-store.json y siempre apunta a la última versión publicada. No descargues nada de aquí: los instaladores viven en los releases store-v*."
+              --notes "Canal estable del auto-updater. Este release solo contiene ${CHANNEL_MANIFEST} y siempre apunta a la última versión publicada. No descargues nada de aquí: los instaladores viven en los releases ${CHANNEL_TAG_PREFIX}*."
           fi

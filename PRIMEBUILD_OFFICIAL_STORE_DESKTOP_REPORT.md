@@ -1,3 +1,17 @@
+> **⚠️ REGISTRO HISTÓRICO — la definición que usa quedó superada.**
+>
+> Este informe describe la extracción de la app desde Internal OS y la llama
+> «read-only administration console». Esa era la definición vigente el
+> 2026-07-17 y **ya no lo es**.
+>
+> Por decisión del propietario (`PB-BLD-001`), PrimeBuild Official Store es el
+> **Product Builder** del canal comercial de PrimeBuild, y PrimeBuild Store es el
+> producto que se construye desde él, no un proyecto independiente.
+>
+> Los hechos técnicos de este informe siguen siendo válidos; su definición
+> arquitectónica no. Definición vigente:
+> [`docs/architecture/PRODUCT_BUILDER.md`](./docs/architecture/PRODUCT_BUILDER.md).
+
 # PrimeBuild Official Store — Desktop App Report
 
 **Date:** 2026-07-17

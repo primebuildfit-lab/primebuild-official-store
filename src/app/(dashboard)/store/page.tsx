@@ -1,97 +1,53 @@
 import type { Metadata } from "next";
-import Link from "next/link";
-import { Card, Icon, KpiCard, Panel, StoreNotConnected } from "@/components/ds";
-import { ModuleHeader, StoreSourceBadge } from "@/components/os/module-header";
+import { PageHeader, Panel } from "@/components/ds";
+import { StoreSourceBadge } from "@/components/os/module-header";
+import { ShopifyCenter } from "@/components/os/shopify-center";
 import { loadStore } from "@/server/integrations/store/load";
 import { storeOverview } from "@/server/integrations/store/store.service";
-import { getSection, type Section } from "@/config/sections";
 
 export const dynamic = "force-dynamic";
-export const metadata: Metadata = { title: "Official Store" };
+export const metadata: Metadata = { title: "Shopify" };
 
-const SUBPAGE_IDS = [
-  "store-products",
-  "store-collections",
-  "store-orders",
-  "store-customers",
-  "store-discounts",
-  "store-rewards",
-] as const;
-
-function DefRow({ label, children }: { label: string; children: React.ReactNode }) {
-  return (
-    <div className="flex items-center justify-between gap-3 border-b border-border/50 py-1.5 last:border-0">
-      <dt className="text-muted">{label}</dt>
-      <dd className="text-right">{children}</dd>
-    </div>
-  );
-}
-
+/**
+ * Shopify (PBOS-001 · ORDEN 16) — the honest Shopify integration center. Shopify
+ * is an external channel, not another admin. Connection is asserted only from a
+ * real successful read (functional evidence); ownership is per-field with no
+ * generic bidirectional sync; PrimeBuild physical inventory is separate from the
+ * Shopify observed quantity; external links use verified URLs only; and every
+ * remote-effect action is blocked in this phase.
+ */
 export default async function StorePage() {
   const res = await loadStore(() => storeOverview());
-  const s = res.data;
-  const subpages = SUBPAGE_IDS.map(getSection).filter(Boolean) as Section[];
+  // Connection is TRUE only when a real read succeeded and returned data.
+  const connected = res.connected && res.data != null;
 
   return (
     <div>
-      <ModuleHeader id="store">
-        <StoreSourceBadge connected={res.connected} error={res.error} />
-      </ModuleHeader>
+      <PageHeader
+        eyebrow="Tienda online"
+        title="Shopify"
+        description="Centro de conexión, propiedad de datos, sincronización y acceso a la tienda."
+        icon="store"
+      >
+        <StoreSourceBadge connected={connected} error={res.error} />
+      </PageHeader>
 
-      {!res.connected || !s ? (
-        <StoreNotConnected error={res.error} />
-      ) : (
-        <>
-          <div className="mb-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            <KpiCard label="Productos" value={String(s.productCount)} icon="box" hint="Publicados" />
-            <KpiCard label="Clientes" value={String(s.customerCount)} icon="users" />
-            <KpiCard
-              label="Pedidos recientes"
-              value={String(s.recentOrderCount)}
-              icon="receipt"
-              hint={`${s.recentOrdersSubtotal} ${s.currency}`}
-            />
-            <KpiCard label="Plan" value={s.planName ?? "—"} icon="sparkles" accent hint={s.currency} />
-          </div>
+      <Panel className="mb-6" icon="shield" title="Un canal externo, no otro Admin">
+        <p className="text-sm text-muted">
+          Shopify se integra como{" "}
+          <span className="font-medium text-foreground">tienda pública y canal</span>, no como otra
+          aplicación administrativa. La conexión se afirma solo con evidencia funcional; la
+          autoridad es por campo (sin bidireccional genérico); el inventario físico de PrimeBuild no
+          es la cantidad observada en Shopify; y en esta fase toda acción con efecto remoto (OAuth,
+          webhooks, sincronización, publicación) está bloqueada.
+        </p>
+      </Panel>
 
-          <Panel className="mb-6" icon="store" title="Tienda oficial" description="Leída en vivo del Admin API de Shopify · solo lectura">
-            <dl className="grid gap-x-8 text-sm sm:grid-cols-2">
-              <DefRow label="Nombre">{s.shopName}</DefRow>
-              <DefRow label="Dominio">
-                <span className="font-mono text-xs">{s.domain}</span>
-              </DefRow>
-              <DefRow label="URL pública">
-                {s.primaryUrl ? <span className="font-mono text-xs">{s.primaryUrl}</span> : "—"}
-              </DefRow>
-              <DefRow label="Moneda">{s.currency}</DefRow>
-            </dl>
-            <p className="mt-3 text-xs text-faint">
-              PrimeBuild Official Store nunca escribe en la tienda.
-            </p>
-          </Panel>
-
-          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
-            {subpages.map((p) => (
-              <Link key={p.id} href={p.href} className="group block">
-                <Card interactive className="flex h-full items-center gap-3 p-4">
-                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-border bg-surface-muted text-accent">
-                    <Icon name={p.icon} size={16} />
-                  </span>
-                  <div className="min-w-0">
-                    <p className="text-sm font-semibold">{p.label}</p>
-                    <p className="mt-0.5 truncate text-xs text-muted">{p.summary}</p>
-                  </div>
-                  <Icon
-                    name="chevron-right"
-                    size={16}
-                    className="ml-auto text-faint transition-transform group-hover:translate-x-0.5"
-                  />
-                </Card>
-              </Link>
-            ))}
-          </div>
-        </>
-      )}
+      <ShopifyCenter
+        connected={connected}
+        overview={res.data ?? null}
+        primaryUrl={res.data?.primaryUrl ?? null}
+      />
     </div>
   );
 }

@@ -445,14 +445,19 @@ mod tests {
     fn placeholder_endpoint_is_not_configured() {
         // The OWNER/REPO placeholder is a deliberate sentinel: it must read as
         // "not configured" so the panel stays honest instead of failing later.
+        // Fixture URLs use the fixed-tag shape the real channel uses. They must
+        // never use `releases/latest/download`: a guard test bans that string
+        // repo-wide, and a fixture is not a good enough reason to weaken it.
         assert!(!endpoint_is_real(
-            "https://github.com/OWNER/REPO/releases/latest/download/latest.json"
+            "https://github.com/OWNER/REPO/releases/download/CHANNEL_TAG/manifest.json"
         ));
         assert!(!endpoint_is_real(""));
         assert!(!endpoint_is_real("   "));
-        assert!(endpoint_is_real("http://127.0.0.1:8787/latest.json"));
+        assert!(endpoint_is_real("http://127.0.0.1:8787/manifest.json"));
+        // example.test, not a github.com URL: a fixture that looks like a real
+        // release channel trips the guard that hunts for undeclared channels.
         assert!(endpoint_is_real(
-            "https://github.com/primebuildfit-lab/store/releases/latest/download/latest.json"
+            "https://example.test/releases/download/example-latest/manifest.json"
         ));
     }
 
