@@ -61,6 +61,21 @@ export interface PrimeBuildOfficialProduct {
   version: number;
 }
 
+/**
+ * Sanitizador del contenido HTML de producto (§81: XSS / inyección vía
+ * contenido). Elimina scripts, estilos embebidos, iframes, manejadores on* y
+ * URLs javascript:. Se aplica al importar Y al renderizar (defensa doble).
+ */
+export function sanitizeProductHtml(html: string): string {
+  return html
+    .replace(/<\s*(script|style|iframe|object|embed|form)[^>]*>[\s\S]*?<\s*\/\s*\1\s*>/gi, "")
+    .replace(/<\s*(script|style|iframe|object|embed|form)[^>]*\/?\s*>/gi, "")
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
+    .replace(/\son\w+\s*=\s*[^\s>]+/gi, "")
+    .replace(/(href|src)\s*=\s*(["']?)\s*javascript:[^"'>\s]*\2/gi, '$1="#"');
+}
+
 export function isOfficialProduct(x: unknown): x is PrimeBuildOfficialProduct {
   if (x === null || typeof x !== "object") return false;
   const p = x as Record<string, unknown>;
@@ -107,7 +122,7 @@ export function importProductFromMirror(
   return {
     id: makeId(),
     title: mirror.title,
-    descriptionHtml: mirror.descriptionHtml,
+    descriptionHtml: mirror.descriptionHtml ? sanitizeProductHtml(mirror.descriptionHtml) : undefined,
     handle: mirror.handle,
     vendor: mirror.vendor ?? "PrimeBuild",
     productType: mirror.productType,

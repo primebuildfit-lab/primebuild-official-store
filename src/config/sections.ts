@@ -138,6 +138,17 @@ export const SECTIONS: Section[] = [
     purpose:
       "Gestión de devoluciones: autorización, recepción, inspección y decisión (reingreso a vendible, cuarentena o daño). La mercancía devuelta nunca vuelve a vendible automáticamente.",
   },
+  {
+    id: "sales-official-orders",
+    label: "Pedidos Official Store",
+    href: "/sales/official-orders",
+    icon: "receipt",
+    group: "Ventas",
+    status: "live",
+    summary: "Pedidos del storefront propio y compras por volumen.",
+    purpose:
+      "Bandeja de pedidos de la Official Store (storefront /shop), incluidas las compras por volumen: pago observado con evidencia, picking, empaque, envío (descuenta el ledger) y devoluciones. Nada se marca pagado ni reembolsado sin referencia observada (PBOS-DPB-MEGA-FABLE-001 §48).",
+  },
 
   // ── Catálogo ─────────────────────────────────────────────────────────────
   {
@@ -183,6 +194,28 @@ export const SECTIONS: Section[] = [
     summary: "Códigos de descuento.",
     purpose:
       "Códigos de descuento de la tienda oficial con su estado y periodo de validez, leídos en vivo del Admin API (solo lectura).",
+  },
+  {
+    id: "catalog-templates",
+    label: "Plantillas",
+    href: "/catalog/templates",
+    icon: "file",
+    group: "Catálogo",
+    status: "live",
+    summary: "Plantillas de tienda versionadas.",
+    purpose:
+      "Plantillas del storefront copiadas de la estructura autorizada de Shopify y convertidas a componentes propios, con ciclo Draft → In review → Approved → Published → Superseded → Archived. Publicar nunca sobrescribe una versión publicada (PBOS-DPB-MEGA-FABLE-001 §16-§17).",
+  },
+  {
+    id: "catalog-pb-pricing",
+    label: "Precios PB",
+    href: "/catalog/pb-pricing",
+    icon: "coins",
+    group: "Catálogo",
+    status: "live",
+    summary: "Precio principal en PB: VN = VA × 0.90.",
+    purpose:
+      "Política de precio de la Official Store (descuento versionado ≈10% sobre el VA declarado) y conversión a PB con el contrato PB_EXCHANGE_V1 (π/3.1, dirección pendiente, anti-arbitraje). USD siempre visible como opción secundaria (PBOS-DPB-MEGA-FABLE-001 §35-§41).",
   },
 
   // ── Compras ──────────────────────────────────────────────────────────────
@@ -299,6 +332,28 @@ export const SECTIONS: Section[] = [
     summary: "Centro de la tienda pública.",
     purpose:
       "Ficha y centro de la tienda oficial primebuildfit (Shopify): nombre, dominio, moneda y plan, leídos en vivo del Admin API (solo lectura). Autoridad por-campo y sincronización se profundizan en PBOS-SHOPIFY-001.",
+  },
+  {
+    id: "store-mirror",
+    label: "Espejo del catálogo",
+    href: "/store/mirror",
+    icon: "refresh",
+    group: "Tienda online",
+    status: "live",
+    summary: "ShopifyCatalogMirror: plantillas y metadata autorizadas.",
+    purpose:
+      "Espejo del catálogo Shopify para la Official Store: descubrimiento, copia de plantillas, mapeo de variantes y stock del proveedor SOLO como observación (jamás stock propio sin recepción). Conflictos con propiedad por campo, nunca resueltos en silencio (PBOS-DPB-MEGA-FABLE-001 §7-§9, §18, §53).",
+  },
+  {
+    id: "online-storefront",
+    label: "Storefront propio",
+    href: "/online/storefront",
+    icon: "globe",
+    group: "Tienda online",
+    status: "live",
+    summary: "La tienda pública de inventario físico propio (/shop).",
+    purpose:
+      "Estado del storefront de la Official Store: regla de visibilidad (available > 0 + elegible + OWNED_STOCK), productos visibles y ocultos, feature flags y eventos. El Client no tiene autoridad sobre su configuración (PBOS-DPB-MEGA-FABLE-001 §10, §42; AP-4.2/AP-4.3).",
   },
   {
     id: "online-pages",
