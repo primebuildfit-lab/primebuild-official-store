@@ -30,3 +30,4 @@ tsconfig.tsbuildinfo
 
 # Next standalone outputFileTracing byproduct (desktop build)
 /WorkspaceExtra/
+.data-verify/
