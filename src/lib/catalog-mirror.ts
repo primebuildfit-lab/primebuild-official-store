@@ -35,11 +35,30 @@ export interface MirrorVariant {
   shopifyVariantId: string;
   title: string;
   sku?: string;
+  barcode?: string;
   priceUsd?: string;
+  /** Precio de comparación (tachado) observado en Shopify (§14). */
+  compareAtPriceUsd?: string;
   options?: Record<string, string>;
+  imageUrl?: string;
   /** SIEMPRE observación del proveedor; nunca stock propio. */
   observedSupplierStock?: number;
 }
+
+/* ─────────────── Estados de sincronización (SCLP-002 §21) ─────────────── */
+
+export const SYNC_STATES = [
+  "Synced",
+  "Pending",
+  "Partial",
+  "Stale",
+  "Conflict",
+  "Source unavailable",
+  "Authentication required",
+  "Failed",
+  "Removed from source",
+] as const;
+export type SyncState = (typeof SYNC_STATES)[number];
 
 export interface ShopifyCatalogMirrorRecord {
   /** id local del registro espejo. */
@@ -57,11 +76,37 @@ export interface ShopifyCatalogMirrorRecord {
   options: { name: string; values: string[] }[];
   variants: MirrorVariant[];
   status: "ACTIVE" | "DRAFT" | "ARCHIVED" | "UNKNOWN";
+  /** Estado en la fuente (§11 SCLP-002): ACTIVE se espeja; DRAFT/ARCHIVED/DELETED jamás públicos. */
+  sourceStatus?: "ACTIVE" | "DRAFT" | "ARCHIVED" | "DELETED";
+  /** Si dejó de estar ACTIVE: cuándo se observó (historial conservado, nada se borra). */
+  removedFromSourceAt?: string;
+  publishedAt?: string;
+  /** updatedAt del producto en Shopify — base de la idempotencia (§19). */
+  updatedAtSource?: string;
+  /** Hash de los campos fuente para detectar cambios sin depender del orden. */
+  sourceHash?: string;
+  syncState?: SyncState;
   /** Fuente y momento de la observación — obligatorios (§11, §70). */
-  source: "shopify_admin_api" | "manual_import";
+  source: "shopify_admin_api" | "manual_import" | "snapshot_import";
   fetchedAt: string;
   modes: MirrorMode[];
   version: number;
+}
+
+/** Colección espejada (§16): título, imagen, regla observada y relaciones. */
+export interface MirrorCollectionRecord {
+  id: string;
+  handle: string;
+  title: string;
+  description?: string;
+  imageUrl?: string;
+  sortOrder?: string;
+  /** Regla observada (tag) — solo observación, la fuente decide. */
+  ruleTag?: string;
+  productsCount?: number;
+  updatedAtSource?: string;
+  source: "shopify_admin_api" | "manual_import" | "snapshot_import";
+  fetchedAt: string;
 }
 
 export function isMirrorRecord(x: unknown): x is ShopifyCatalogMirrorRecord {

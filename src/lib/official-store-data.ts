@@ -8,7 +8,7 @@
  * stock. Todo es «Workspace local»: nada aquí toca Shopify ni CoinOS.
  */
 
-import { useCallback, useMemo } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   INVENTORY_SCHEMA_VERSION,
   isMovement,
@@ -320,4 +320,115 @@ export function useStorefrontCatalog(): CatalogView {
       variantAvailability,
     };
   }, [products.items, products.ready, inventory]);
+}
+
+/* ───────────── Catálogo en vivo del mirror del servidor (SCLP-002) ───────────── */
+
+import type { MirrorCollectionRecord, SyncState } from "./catalog-mirror";
+import type { VisibilityPolicy } from "@/config/visibility-policy";
+import { isPubliclyVisible } from "@/config/visibility-policy";
+
+export interface LiveCatalogPayload {
+  state: SyncState;
+  meta: Record<string, unknown>;
+  updatedAt: string;
+  policy: VisibilityPolicy;
+  products: ShopifyCatalogMirrorRecord[];
+  collections: MirrorCollectionRecord[];
+}
+
+export interface LiveCatalogView {
+  ready: boolean;
+  state: SyncState | "loading" | "unreachable";
+  policy: VisibilityPolicy | null;
+  updatedAt: string | null;
+  /** Mirror completo (todo ACTIVE copiado; §12). */
+  mirrorProducts: ShopifyCatalogMirrorRecord[];
+  collections: MirrorCollectionRecord[];
+  /** Solo lo público según la política (§13) + stock propio. */
+  publicProducts: ShopifyCatalogMirrorRecord[];
+  /** Disponible propio por SKU (agregado de almacenes). */
+  ownedAvailableBySku: (sku: string | undefined) => number;
+  /** Disponible propio total del producto espejo. */
+  ownedAvailableOf: (p: ShopifyCatalogMirrorRecord) => number;
+  manuallyEnabled: Set<string>;
+  setManuallyEnabled: (shopifyProductId: string, enabled: boolean) => void;
+  refresh: () => void;
+}
+
+interface EnabledFlag {
+  id: string; // shopifyProductId
+  enabledAt: string;
+}
+function isEnabledFlag(x: unknown): x is EnabledFlag {
+  return x !== null && typeof x === "object" && typeof (x as EnabledFlag).id === "string";
+}
+
+/**
+ * Catálogo en vivo (PBOS-SCLP-FABLE-002 §10-§13): el mirror del servidor es la
+ * fuente del catálogo; el ledger local es la ÚNICA fuente del stock propio
+ * (el supplier stock del espejo jamás cuenta); la política de visibilidad
+ * decide qué llega al público. Con la fuente caída se sirve el último mirror
+ * válido (§31) — el fetch es a la API local cacheada, nunca a Shopify.
+ */
+export function useLiveCatalog(): LiveCatalogView {
+  const inventory = useOwnedInventory();
+  const enabledCol = useVersionedCollection<EnabledFlag>("official:mirror-enabled", 1, isEnabledFlag);
+  const [payload, setPayload] = useState<LiveCatalogPayload | null>(null);
+  const [state, setState] = useState<LiveCatalogView["state"]>("loading");
+
+  const load = useCallback(() => {
+    fetch("/api/mirror/catalog")
+      .then((r) => r.json())
+      .then((d: LiveCatalogPayload) => {
+        setPayload(d);
+        setState(d.state);
+      })
+      .catch(() => setState("unreachable"));
+  }, []);
+
+  useEffect(() => {
+    load();
+  }, [load]);
+
+  const ownedAvailableBySku = useCallback(
+    (sku: string | undefined) => (sku && sku.trim() ? inventory.availableByKey(sku.trim()) : 0),
+    [inventory],
+  );
+
+  return useMemo(() => {
+    const manuallyEnabled = new Set(enabledCol.items.map((e) => e.id));
+    const mirrorProducts = payload?.products ?? [];
+    const policy = payload?.policy ?? null;
+    const ownedAvailableOf = (p: ShopifyCatalogMirrorRecord) =>
+      p.variants.reduce((acc, v) => acc + ownedAvailableBySku(v.sku), 0);
+    const publicProducts = policy
+      ? mirrorProducts.filter((p) =>
+          isPubliclyVisible({
+            sourceStatus: p.sourceStatus ?? p.status,
+            ownedAvailable: ownedAvailableOf(p),
+            manuallyEnabled: manuallyEnabled.has(p.shopifyProductId),
+            policy,
+          }),
+        )
+      : [];
+    return {
+      ready: payload !== null && inventory.ready,
+      state,
+      policy,
+      updatedAt: payload?.updatedAt ?? null,
+      mirrorProducts,
+      collections: payload?.collections ?? [],
+      publicProducts,
+      ownedAvailableBySku,
+      ownedAvailableOf,
+      manuallyEnabled,
+      setManuallyEnabled: (id, enabled) => {
+        const existing = enabledCol.items.find((e) => e.id === id);
+        if (enabled && !existing) enabledCol.add({ id, enabledAt: new Date().toISOString() });
+        if (!enabled && existing) enabledCol.remove(existing.id);
+      },
+      refresh: load,
+    };
+  }, [payload, state, inventory.ready, enabledCol, ownedAvailableBySku, load]);
 }

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { PageHeader, Panel } from "@/components/ds";
 import { MirrorCenter } from "@/components/os/mirror-center";
+import { SyncCenter } from "@/components/os/sync-center";
 
 export const metadata: Metadata = { title: "Espejo del catálogo" };
 
@@ -26,6 +27,8 @@ export default function MirrorPage() {
           resuelven en silencio y no existen escrituras masivas destructivas.
         </p>
       </Panel>
+      <SyncCenter />
+      <div className="mt-6" />
       <MirrorCenter />
     </div>
   );
