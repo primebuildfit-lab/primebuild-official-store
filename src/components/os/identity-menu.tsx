@@ -40,11 +40,17 @@ export function IdentityMenu() {
         aria-haspopup="menu"
         aria-expanded={open}
         aria-label="Identidad y sesión"
-        className="grid h-9 w-9 place-items-center rounded-lg text-white shadow-[var(--shadow-glow)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-        style={{ background: "var(--gradient-accent)" }}
+        className="grid h-9 w-9 place-items-center overflow-hidden rounded-lg bg-surface-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
         title={`${IDENTITY.title} · ${IDENTITY.subtitle}`}
       >
-        <span className="text-[0.7rem] font-black">PB</span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/brand/primebuild-mark.png"
+          alt="PrimeBuild"
+          width={24}
+          height={24}
+          className="h-6 w-6 object-contain"
+        />
       </button>
 
       {open ? (
