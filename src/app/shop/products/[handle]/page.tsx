@@ -136,10 +136,29 @@ export default function ShopProductPage() {
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
       <div className="pbsf-pdp">
         <div className="pbsf-pdp-gallery">
-          {mirror.mediaUrls.slice(0, 8).map((u) => (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img key={u} src={u} alt={mirror.title} loading="lazy" />
-          ))}
+          {mirror.mediaUrls.length === 0 ? (
+            <div
+              style={{
+                aspectRatio: "1 / 1",
+                background: "var(--pbsf-bg-tile)",
+                borderRadius: 8,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                color: "#333",
+                fontSize: 56,
+                gridColumn: "span 2",
+              }}
+              aria-label="Producto sin imágenes en la fuente"
+            >
+              ◫
+            </div>
+          ) : (
+            mirror.mediaUrls.slice(0, 8).map((u) => (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img key={u} src={u} alt={mirror.title} loading="lazy" />
+            ))
+          )}
         </div>
 
         <div className="pbsf-pdp-buy">
