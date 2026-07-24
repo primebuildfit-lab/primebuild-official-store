@@ -3,45 +3,96 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ProductCard } from "@/components/shop/product-card";
-import { useStorefrontCatalog } from "@/lib/official-store-data";
+import { STOREFRONT_MAIN_MENU } from "@/config/storefront-menu";
+import { cardFromMirror, mirrorProductsInCollection } from "@/lib/mirror-card";
+import { useLiveCatalog } from "@/lib/official-store-data";
 
-/** Colección (§42): productos visibles de una colección concreta. */
+/**
+ * Página de colección clonada (PBOS-SCLP-FABLE-002 §6): «SHOP BY CATEGORY» en
+ * círculos (pb-subcat, anillo dorado en la activa), pills de subcolecciones y
+ * grid 4/3/2. Estructura y relaciones vienen del mirror; la visibilidad, de la
+ * política + stock propio. Colección vacía: estado honesto, no se inventa.
+ */
 export default function ShopCollectionPage() {
   const params = useParams<{ handle: string }>();
   const handle = decodeURIComponent(params.handle);
-  const catalog = useStorefrontCatalog();
+  const live = useLiveCatalog();
 
-  const products = catalog.visibleProducts.filter((p) => p.collections.includes(handle));
+  const collection = live.collections.find((c) => c.handle === handle);
+  // Círculos: las subcolecciones del grupo del menú al que pertenece esta colección.
+  const menuGroup = STOREFRONT_MAIN_MENU.find(
+    (m) => m.href.endsWith(`/${handle}`) || m.children?.some((c) => c.href.endsWith(`/${handle}`)),
+  );
+  const circles = (menuGroup?.children ?? [])
+    .map((c) => {
+      const h = c.href.split("/").pop() ?? "";
+      const col = live.collections.find((x) => x.handle === h);
+      return col ? { handle: h, title: c.title, image: col.imageUrl } : null;
+    })
+    .filter((x): x is NonNullable<typeof x> => x !== null);
+
+  const products = mirrorProductsInCollection(live.publicProducts, handle, collection?.ruleTag);
+  const cards = products.map((p) => cardFromMirror(p, live.ownedAvailableOf(p)));
 
   return (
-    <div className="flex flex-col gap-6">
-      <header>
-        <Link href="/shop/catalog" className="text-xs text-neutral-500 hover:text-neutral-300">
-          ← Tienda
-        </Link>
-        <h1 className="mt-1 text-2xl font-bold">{handle}</h1>
-        <p className="text-sm text-neutral-400">
-          {products.length} producto{products.length === 1 ? "" : "s"} con stock disponible.
-        </p>
-      </header>
-      {products.length === 0 ? (
-        <div className="rounded-xl border border-dashed border-neutral-700 p-10 text-center text-sm text-neutral-400">
-          Esta colección no tiene productos con stock ahora mismo.
-        </div>
-      ) : (
-        <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-          {products.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              availableTotal={p.variants.reduce(
-                (acc, v) => acc + (catalog.variantAvailability.get(v.id)?.available ?? 0),
-                0,
-              )}
-            />
-          ))}
-        </div>
-      )}
+    <div>
+      {circles.length > 0 ? (
+        <section className="pb-subcat">
+          <h2 className="pb-subcat-heading">Shop by category</h2>
+          <div className="pb-subcat-track">
+            {circles.map((c) => (
+              <Link
+                key={c.handle}
+                href={`/shop/collections/${encodeURIComponent(c.handle)}`}
+                className={`pb-subcat-item${c.handle === handle ? " pb-active" : ""}`}
+              >
+                <span className="pb-subcat-thumb">
+                  {c.image ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={c.image} alt={c.title} loading="lazy" />
+                  ) : null}
+                </span>
+                <span className="pb-subcat-label">{c.title}</span>
+              </Link>
+            ))}
+          </div>
+        </section>
+      ) : null}
+
+      <div className="pb-products">
+        <h1 className="pbsf-serif-heading">{collection?.title ?? handle}</h1>
+        {menuGroup?.children ? (
+          <div className="pb-sort-bar">
+            {[{ title: "ALL", href: menuGroup.href }, ...menuGroup.children].map((c) => {
+              const h = c.href.split("/").pop() ?? "";
+              return (
+                <Link
+                  key={c.title}
+                  href={c.href}
+                  className={`pb-sort-link${h === handle ? " pb-sort-active" : ""}`}
+                >
+                  {c.title}
+                </Link>
+              );
+            })}
+          </div>
+        ) : null}
+        <p className="pb-count">{live.ready ? `${cards.length} products` : "Cargando…"}</p>
+        {live.ready && cards.length === 0 ? (
+          <div className="pbsf-empty">
+            <p>
+              <strong>Esta colección no tiene productos públicos ahora mismo.</strong> Los productos
+              activos de Shopify están espejados y se publican al tener stock físico propio.
+            </p>
+          </div>
+        ) : (
+          <div className="pb-grid">
+            {cards.map((c) => (
+              <ProductCard key={c.id} product={c} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

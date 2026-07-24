@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { ShopShell } from "@/components/shop/shop-shell";
+import "@/styles/shopify-clone.css";
 
 export const metadata: Metadata = {
   title: { default: "PrimeBuild Official Store", template: "%s · PrimeBuild Official Store" },

@@ -1,6 +1,6 @@
 "use client";
 
-import { ProductCard } from "@/components/shop/product-card";
+import { ProductCard, cardFromOfficialProduct } from "@/components/shop/product-card";
 import { fastShippingVerdict } from "@/lib/owned-inventory";
 import { useStorefrontCatalog } from "@/lib/official-store-data";
 
@@ -41,14 +41,7 @@ export default function ShopFastShippingPage() {
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
           {eligible.map((p) => (
-            <ProductCard
-              key={p.id}
-              product={p}
-              availableTotal={p.variants.reduce(
-                (acc, v) => acc + (catalog.variantAvailability.get(v.id)?.available ?? 0),
-                0,
-              )}
-            />
+            <ProductCard key={p.id} product={cardFromOfficialProduct(p, p.variants.reduce((acc, v) => acc + (catalog.variantAvailability.get(v.id)?.available ?? 0), 0))} />
           ))}
         </div>
       )}
