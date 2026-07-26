@@ -29,6 +29,7 @@
     "desktop:auto:once": "node scripts/desktop/auto-rebuild.mjs --once"
   },
   "dependencies": {
+    "@platform-nexus/app-surface": "file:D:/empresas/_SHARED/platform-nexus-app-surface-0.1.1.tgz",
     "clsx": "^2.1.1",
     "next": "^15.1.4",
     "react": "^19.0.0",
