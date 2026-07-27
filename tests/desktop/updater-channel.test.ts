@@ -67,6 +67,10 @@ const REPO_NAME_ALLOWED = new Map<string, string>([
     "PRIMEBUILD_OFFICIAL_STORE_DESKTOP_REPORT.md",
     "historical build report; narrative, not configuration",
   ],
+  [
+    "src/lib/nexus-surface.ts",
+    "NAME COLLISION, not a copy: this is the Nexus IdP AUDIENCE id for this app, which happens to spell the same as the release repository. It never reaches the updater and must not be derived from updater-channel.json.",
+  ],
 ]);
 
 describe("canonical channel definition", () => {
