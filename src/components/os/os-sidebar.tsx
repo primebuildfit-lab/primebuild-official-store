@@ -26,16 +26,18 @@ export function OsSidebar() {
       className="flex h-full flex-col gap-5 overflow-y-auto bg-sidebar px-3 py-4"
     >
       <Link href="/" className="group flex items-center gap-2.5 px-2 py-1">
-        <span
-          className="grid h-9 w-9 place-items-center rounded-xl text-sm font-black text-white shadow-[var(--shadow-glow)]"
-          style={{ background: "var(--gradient-accent)" }}
-        >
-          PB
-        </span>
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img
+          src="/brand/primebuild-mark.png"
+          alt="PrimeBuild"
+          width={36}
+          height={36}
+          className="h-9 w-9 shrink-0 object-contain"
+        />
         <span className="min-w-0">
-          <span className="block truncate text-sm font-bold tracking-tight">Official Store</span>
+          <span className="block text-sm font-bold leading-tight tracking-tight">{app.name}</span>
           <span className="block text-[0.62rem] uppercase tracking-[0.12em] text-faint">
-            PrimeBuild · Comercial
+            {app.adminSubtitle}
           </span>
         </span>
       </Link>
@@ -81,6 +83,13 @@ export function OsSidebar() {
                       )}
                     />
                     <span className="truncate">{item.label}</span>
+                    {item.status === "planned" ? (
+                      <span
+                        className="ml-auto h-1.5 w-1.5 shrink-0 rounded-full bg-faint/60"
+                        title="Espacio definido — aún no construido"
+                        aria-label="Planificado"
+                      />
+                    ) : null}
                   </Link>
                 );
               })}

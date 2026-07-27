@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { OsSidebar } from "./os-sidebar";
 import { OsTopbar } from "./os-topbar";
 import { OsCommandPalette } from "./os-command-palette";
+import { Breadcrumb } from "./breadcrumb";
 import { app } from "@/config/app";
 
 /**
@@ -61,7 +62,10 @@ export function OsShell({
           onOpenMenu={() => setDrawer(true)}
           storeConnected={storeConnected}
         />
-        <main className="mx-auto w-full max-w-[92rem] flex-1 px-4 py-7 sm:px-6 lg:px-8">
+        <main className="mx-auto w-full max-w-[92rem] flex-1 px-4 py-6 sm:px-6 lg:px-8">
+          <div className="mb-5">
+            <Breadcrumb />
+          </div>
           {children}
         </main>
         <footer className="flex flex-wrap items-center justify-between gap-2 border-t border-border px-6 py-3 text-[0.7rem] text-faint">

@@ -2,6 +2,8 @@
 
 import { Badge, Icon, StatusDot } from "@/components/ds";
 import { ThemeToggle } from "./theme-toggle";
+import { TaskCenter } from "./task-center";
+import { IdentityMenu } from "./identity-menu";
 
 /**
  * The sticky command-center topbar: mobile menu trigger, a command-palette
@@ -45,15 +47,17 @@ export function OsTopbar({
         {storeConnected ? (
           <Badge kind="healthy" title="Tienda oficial conectada (solo lectura)">
             <StatusDot tone="ok" live />
-            Tienda conectada
+            <span className="hidden sm:inline">Tienda conectada</span>
           </Badge>
         ) : (
           <Badge kind="warning" title="Tienda oficial no conectada">
             <StatusDot tone="warn" />
-            Tienda no conectada
+            <span className="hidden sm:inline">Tienda no conectada</span>
           </Badge>
         )}
+        <TaskCenter />
         <ThemeToggle />
+        <IdentityMenu />
       </div>
     </header>
   );

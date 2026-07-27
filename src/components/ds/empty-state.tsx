@@ -1,12 +1,15 @@
 import { Card } from "./card";
-import { Icon, type IconName } from "./icon";
+import { Icon } from "./icon";
+
+// The generic honest empty state now lives in states.tsx (single source, PBOS
+// ORDEN 0.E). Re-export it here so existing `NoData` imports keep working.
+export { NoData } from "./states";
 
 /**
- * Honest empty / not-connected states. When the store is not connected, or a
- * module has no rows yet, we say so plainly and show what would appear — never
- * fake data.
+ * The Shopify-specific not-connected state. When the live store is not connected
+ * we say so plainly and show exactly what is needed to connect it — never fake
+ * data.
  */
-
 export function StoreNotConnected({ error }: { error?: string }) {
   return (
     <Card className="border-dashed">
@@ -26,7 +29,7 @@ export function StoreNotConnected({ error }: { error?: string }) {
         </p>
         {!error ? (
           <pre className="mt-1 overflow-x-auto rounded-lg border border-border bg-surface-muted/50 p-3 text-[0.72rem] text-muted">
-{`# .env
+            {`# .env
 SHOPIFY_STORE_DOMAIN="primebuildfit.myshopify.com"
 SHOPIFY_ADMIN_ACCESS_TOKEN="shpat_********"   # token de solo lectura
 # opcional:
@@ -34,29 +37,9 @@ SHOPIFY_API_VERSION="2025-01"`}
           </pre>
         ) : null}
         <p className="text-xs text-faint">
-          Solo lectura: PrimeBuild Official Store nunca escribe en la tienda. Hasta conectarla, este estado vacío es honesto
-          — no se inventan productos, pedidos ni ingresos.
+          Solo lectura: PrimeBuild Official Store nunca escribe en la tienda. Hasta conectarla, este
+          estado vacío es honesto — no se inventan productos, pedidos ni ingresos.
         </p>
-      </div>
-    </Card>
-  );
-}
-
-export function NoData({
-  message = "Sin registros todavía.",
-  icon = "package",
-}: {
-  message?: string;
-  icon?: IconName;
-}) {
-  return (
-    <Card className="border-dashed">
-      <div className="flex flex-col items-center gap-2 p-10 text-center">
-        <span className="grid h-10 w-10 place-items-center rounded-full border border-border bg-surface-muted text-faint">
-          <Icon name={icon} size={18} />
-        </span>
-        <p className="text-sm font-medium text-muted">{message}</p>
-        <p className="text-xs text-faint">Cuando existan datos reales, aparecerán aquí.</p>
       </div>
     </Card>
   );
