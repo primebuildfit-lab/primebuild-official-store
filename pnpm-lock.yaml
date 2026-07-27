@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       '@platform-nexus/app-surface':
-        specifier: file:D:/empresas/_SHARED/platform-nexus-app-surface-0.1.1.tgz
-        version: file:../../_SHARED/platform-nexus-app-surface-0.1.1.tgz(react@19.2.7)
+        specifier: file:vendor/platform-nexus-app-surface-0.1.1.tgz
+        version: file:vendor/platform-nexus-app-surface-0.1.1.tgz(react@19.2.7)
       clsx:
         specifier: ^2.1.1
         version: 2.1.1
@@ -643,8 +643,8 @@ packages:
     resolution: {integrity: sha512-nn5ozdjYQpUCZlWGuxcJY/KpxkWQs4DcbMCmKojjyrYDEAGy4Ce19NN4v5MduafTwJlbKc99UA8YhSVqq9yPZA==}
     engines: {node: '>=12.4.0'}
 
-  '@platform-nexus/app-surface@file:../../_SHARED/platform-nexus-app-surface-0.1.1.tgz':
-    resolution: {integrity: sha512-8FLg+EDDMcsXgYIY7L8QiyIPEuomdROtcQ9Qz30nara2XJGfmL05EdDfHzncuSJqgPjs1iasjGXUMZUO2O6lXQ==, tarball: file:../../_SHARED/platform-nexus-app-surface-0.1.1.tgz}
+  '@platform-nexus/app-surface@file:vendor/platform-nexus-app-surface-0.1.1.tgz':
+    resolution: {integrity: sha512-8FLg+EDDMcsXgYIY7L8QiyIPEuomdROtcQ9Qz30nara2XJGfmL05EdDfHzncuSJqgPjs1iasjGXUMZUO2O6lXQ==, tarball: file:vendor/platform-nexus-app-surface-0.1.1.tgz}
     version: 0.1.1
     peerDependencies:
       react: '>=18'
@@ -3269,7 +3269,7 @@ snapshots:
 
   '@nolyfill/is-core-module@1.0.39': {}
 
-  '@platform-nexus/app-surface@file:../../_SHARED/platform-nexus-app-surface-0.1.1.tgz(react@19.2.7)':
+  '@platform-nexus/app-surface@file:vendor/platform-nexus-app-surface-0.1.1.tgz(react@19.2.7)':
     optionalDependencies:
       react: 19.2.7
 
