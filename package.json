@@ -15,6 +15,7 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
+    "verify:vendor": "node scripts/verify-vendor.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "format": "prettier --write \"**/*.{ts,tsx,md,json,css}\"",
@@ -29,6 +30,7 @@
     "desktop:auto:once": "node scripts/desktop/auto-rebuild.mjs --once"
   },
   "dependencies": {
+    "@platform-nexus/app-surface": "file:vendor/platform-nexus-app-surface-0.1.1.tgz",
     "clsx": "^2.1.1",
     "next": "^15.1.4",
     "react": "^19.0.0",
