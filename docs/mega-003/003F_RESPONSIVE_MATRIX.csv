@@ -1,0 +1,11 @@
+breakpoint,pagina,captura,resultado,notas
+320,/shop,responsive/home-320.png,OK,rewards bar y header apilan; hero centrado; bento full-width; sin overflow horizontal
+375,/shop,responsive/home-375.png,OK,igual que movil base
+430,/shop,responsive/home-430.png,OK,
+768,/shop,responsive/home-768.png,OK,grids 3 col (regla 989); nav movil hasta 989 como el theme real
+1024,/shop,responsive/home-1024.png,OK,nav desktop activa; grid 4 col
+1280,/shop,responsive/home-1280.png,OK,
+1440,/shop,responsive/home-1440.png,OK,paridad con capturas del theme real
+1920,/shop,responsive/home-1920.png,OK,max-widths centrados (1400/1600); hero full-bleed sin artefactos
+320,PDP,responsive/pdp-320.png,OK,galeria 1 col; columna compra apilada; pills envuelven
+1920,PDP,responsive/pdp-1920.png,OK,galeria 2 col + columna sticky

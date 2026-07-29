@@ -1118,3 +1118,20 @@
   font-family: var(--pbsf-font-sans);
 }
 .pbsf-empty strong { color: var(--pbsf-text); }
+
+/* ─────────────── Accesibilidad: movimiento reducido (003F) ─────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .pb-rewards-bar__coin { animation: none; opacity: 0.5; }
+  .pb-bento-tile img,
+  .pb-card-image img,
+  .pb-bento-tile .pb-accent,
+  .pb-subcat-thumb,
+  .pbsf-btn-pill,
+  .pb-nav-link,
+  .pb-caret,
+  .pbsf-variant-pill,
+  .pbsf-add-to-cart { transition: none; }
+  .pb-bento-tile:hover img,
+  .pb-card:hover .pb-card-image img { transform: none; }
+}
