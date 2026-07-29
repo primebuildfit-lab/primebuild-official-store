@@ -10,9 +10,9 @@ import { SECTIONS, SECTION_GROUPS, getSection, sectionsByGroup } from "@/config/
  */
 describe("section registry", () => {
   it("defines the full commerce-admin surface", () => {
-    // 37 de PBOS-001 + 5 de PBOS-DPB-MEGA-FABLE-001 (pedidos Official Store,
+    // 37 de PBOS-001 + 5 de MEGA-001 + 1 wizard de recepción (MEGA-004) (pedidos Official Store,
     // plantillas, precios PB, espejo del catálogo y storefront propio).
-    expect(SECTIONS.length).toBe(42);
+    expect(SECTIONS.length).toBe(43);
   });
 
   it("has unique ids and unique hrefs", () => {

@@ -1,0 +1,9 @@
+regla,mecanismo,evidencia
+supplier stock aislado,observedSupplierStock solo observacion; wizard exige cantidad tecleada,officialFromMirror test + wizard UI
+sin stock negativo,wouldGoNegative + condicion por bucket,tests owned-inventory
+sin oversell,reserva atomica idempotente,tests + E2E concurrencia
+razon+actor obligatorios,movimiento requiere reason/actor,esquema + wizard
+ubicacion obligatoria,warehouseId requerido,esquema
+correccion auditada,reverseMovement compensatorio,wizard + tests PBOS-001
+low-stock/reorder,reorderPoint en derivacion + espacio Reposicion,owned-inventory + PBOS-001
+recuento sin tocar saldo,counts PBOS-001 (ajuste aprobado aparte),PBOS-001 tests

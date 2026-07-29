@@ -277,6 +277,17 @@ export const SECTIONS: Section[] = [
       "Inventario propio y profundo: on hand, available, reserved, committed, incoming, damaged, quarantine, safety stock y available to sell, por SKU, almacén y ubicación. El saldo no se edita directamente: toda modificación produce un movimiento auditado.",
   },
   {
+    id: "inventory-receiving-wizard",
+    label: "Wizard de recepción",
+    href: "/inventory/receiving-wizard",
+    icon: "inbox",
+    group: "Inventario",
+    status: "live",
+    summary: "Primer stock real, guiado y verificado.",
+    purpose:
+      "Recepción guiada del primer inventario físico: producto espejado, mapeo de SKU, almacén, cantidad contada, condición y evidencia; contabiliza en el ledger append-only y verifica visibilidad y precio al instante (MEGA-FABLE-004 004E).",
+  },
+  {
     id: "inventory-warehouses",
     label: "Almacenes y ubicaciones",
     href: "/inventory/warehouses",
