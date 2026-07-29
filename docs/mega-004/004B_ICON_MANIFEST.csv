@@ -1,0 +1,7 @@
+app,recurso,archivo,origen,estado
+Official Store,exe/installer/window icon,src-tauri/icons/icon.ico,tauri icon desde master dorado aprobado,commiteado desde 0.1.8; instalado 0.1.11
+Official Store,Square*/Store logos,src-tauri/icons/Square*.png + StoreLogo.png,idem,commiteado
+Official Store,PWA + favicon,public/icon-192/256/512.png + src/app/icon.png,idem,commiteado
+Official Store,marca UI,public/brand/primebuild-mark(.png/-white.png) + pb-logo-lime.png,lockups aprobados,commiteado
+Internal OS,exe/installer/window icon,src-tauri/icons/icon.ico,porte del rebrand aprobado (0d41029),commiteado en rama 004; instalar en 004H
+Internal OS,Square*/Store logos + android/ios,src-tauri/icons/**,idem,commiteado en rama 004
