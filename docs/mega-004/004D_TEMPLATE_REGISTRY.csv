@@ -1,0 +1,16 @@
+pageKey,titulo,estado,version,ruta prevista,secciones
+PB_HOME,Home publica,PUBLISHED,1,/shop,4
+PB_PRODUCT_LAUNCH,Product Launch,DRAFT,1,/shop/launch/[handle],4
+PB_COLLECTION_CAMPAIGN,Collection Campaign,DRAFT,1,/shop/campaign/collection/[handle],2
+PB_SEASONAL,Seasonal Campaign,DRAFT,1,/shop/campaign/seasonal/[slug],2
+PB_FAST_SHIPPING,Fast Shipping Campaign,DRAFT,1,/shop/campaign/fast-shipping,2
+PB_BULK_BUYER,Bulk Buyer Landing,PUBLISHED,1,/shop/business,2
+PB_WAREHOUSE_ARRIVAL,Warehouse Arrival,DRAFT,1,/shop/campaign/arrival/[receiptId],1
+PB_STOCK_DROP,New Stock Drop,DRAFT,1,/shop/campaign/drop/[slug],1
+PB_LIMITED_OWNED,Limited Owned Inventory,DRAFT,1,/shop/campaign/limited,1
+PB_PB_SAVINGS,PB Savings Campaign,DRAFT,1,/shop/campaign/pb-savings,1
+PB_SPORT_LANDING,Sport Category Landing,DRAFT,1,/shop/campaign/sport,1
+PB_ESSENTIALS_LANDING,Prime Essentials Landing,DRAFT,1,/shop/campaign/essentials,1
+PB_EMAIL_CAPTURE,Email Capture,DRAFT,1,/shop/join,1
+PB_WAITLIST,Waitlist,DRAFT,1,/shop/waitlist/[handle],1
+PB_REFERRAL,Referral/Partner,DRAFT,1,/shop/partners,1

@@ -1,0 +1,4 @@
+pageKey,ruta prevista,estado navegacion
+PB_HOME,/shop,publica
+PB_BULK_BUYER,/shop/business,publica
+resto (12 familias),/shop/campaign/* /shop/launch/* /shop/join /shop/waitlist/* /shop/partners,NO navegables (DRAFT)

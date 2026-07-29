@@ -1,0 +1,12 @@
+ruta,proposito,CTA primario,estado
+/shop/how-it-works,explicar el modelo,Ver la tienda,build OK
+/shop/pb-pricing,explicar precio PB con ejemplo vivo,-,build OK
+/shop/business,aterrizaje B2B,Abrir compra por volumen,build OK
+/shop/new-arrivals,novedades por fecha real,grid,build OK
+/shop/owned-inventory,prueba de stock propio,grid/Ver tienda,build OK
+/shop/shipping,politica de envios,-,build OK
+/shop/faq,dudas reales,-,build OK
+/shop/about,marca,-,build OK
+/shop/contact,canal real,mailto,build OK
+/shop/order-status,consulta de pedido,Consultar estado,build OK
+/shop/catalog,filtros tipo+precio anadidos,grid,build OK

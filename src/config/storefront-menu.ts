@@ -53,8 +53,9 @@ export const STOREFRONT_FOOTER_COLUMNS: FooterColumn[] = [
     title: "Shop",
     links: [
       { title: "All Products", href: "/shop/catalog" },
-      { title: "Best Sellers", href: "/shop/catalog" },
-      { title: "New Arrivals", href: "/shop/catalog" },
+      { title: "New Arrivals", href: "/shop/new-arrivals" },
+      { title: "Owned Inventory", href: "/shop/owned-inventory" },
+      { title: "Business Buyers", href: "/shop/business" },
     ],
   },
   {
@@ -69,17 +70,19 @@ export const STOREFRONT_FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "Company",
     links: [
-      { title: "About Us", href: `${LIVE}/pages/about-us`, external: true },
+      { title: "About Us", href: "/shop/about" },
+      { title: "How It Works", href: "/shop/how-it-works" },
       { title: "Affiliate Program", href: `${LIVE}/pages/primebuild-affiliate-program`, external: true },
-      { title: "Contact Us", href: "/shop/support" },
+      { title: "Contact Us", href: "/shop/contact" },
     ],
   },
   {
     title: "Help",
     links: [
-      { title: "FAQ", href: `${LIVE}/pages/faq`, external: true },
-      { title: "Shipping Policy", href: "/shop/policies" },
-      { title: "Track Your Order", href: "/shop/account" },
+      { title: "FAQ", href: "/shop/faq" },
+      { title: "Shipping Policy", href: "/shop/shipping" },
+      { title: "PB Pricing", href: "/shop/pb-pricing" },
+      { title: "Track Your Order", href: "/shop/order-status" },
     ],
   },
 ];

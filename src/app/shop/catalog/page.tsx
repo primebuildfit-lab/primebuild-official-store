@@ -18,18 +18,48 @@ const SORTS = [
   { id: "title", label: "A–Z" },
 ] as const;
 
+const PRICE_BANDS = [
+  { id: "", label: "Cualquier precio" },
+  { id: "0-25", label: "Hasta $25" },
+  { id: "25-50", label: "$25 – $50" },
+  { id: "50-", label: "Más de $50" },
+] as const;
+
 export default function ShopCatalogPage() {
   const live = useLiveCatalog();
   const [sort, setSort] = useState<(typeof SORTS)[number]["id"]>("featured");
+  const [ptype, setPtype] = useState("");
+  const [band, setBand] = useState("");
+
+  // Filtros honestos (MEGA-004 004C): solo donde los datos existen — tipo de
+  // producto y precio vienen del espejo real; disponibilidad ya es implícita
+  // (todo lo público tiene stock propio).
+  const types = useMemo(() => {
+    const s = new Set<string>();
+    for (const p of live.publicProducts) if (p.productType) s.add(p.productType);
+    return [...s].sort();
+  }, [live.publicProducts]);
 
   const cards = useMemo(() => {
-    const list = live.publicProducts.map((p) => cardFromMirror(p, live.ownedAvailableOf(p)));
+    let pool = live.publicProducts;
+    if (ptype) pool = pool.filter((p) => p.productType === ptype);
+    const list = pool.map((p) => cardFromMirror(p, live.ownedAvailableOf(p)));
     const price = (c: { vnUsd?: string }) => parseFloat(c.vnUsd ?? "0");
-    if (sort === "price-asc") list.sort((a, b) => price(a) - price(b));
-    if (sort === "price-desc") list.sort((a, b) => price(b) - price(a));
-    if (sort === "title") list.sort((a, b) => a.title.localeCompare(b.title));
-    return list;
-  }, [live, sort]);
+    let filtered = list;
+    if (band) {
+      const sep = band.indexOf("-");
+      const lo = parseFloat(band.slice(0, sep) || "0");
+      const hiRaw = band.slice(sep + 1);
+      filtered = list.filter((c) => {
+        const v = price(c);
+        return v >= lo && (hiRaw === "" || v <= parseFloat(hiRaw));
+      });
+    }
+    if (sort === "price-asc") filtered.sort((a, b) => price(a) - price(b));
+    if (sort === "price-desc") filtered.sort((a, b) => price(b) - price(a));
+    if (sort === "title") filtered.sort((a, b) => a.title.localeCompare(b.title));
+    return filtered;
+  }, [live, sort, ptype, band]);
 
   return (
     <div className="pb-products" style={{ paddingTop: 40 }}>
@@ -42,6 +72,32 @@ export default function ShopCatalogPage() {
             onClick={() => setSort(s.id)}
           >
             {s.label}
+          </button>
+        ))}
+      </div>
+      <div className="pb-sort-bar">
+        <button
+          className={`pb-sort-link${ptype === "" ? " pb-sort-active" : ""}`}
+          onClick={() => setPtype("")}
+        >
+          Todos los tipos
+        </button>
+        {types.map((t) => (
+          <button
+            key={t}
+            className={`pb-sort-link${ptype === t ? " pb-sort-active" : ""}`}
+            onClick={() => setPtype(ptype === t ? "" : t)}
+          >
+            {t}
+          </button>
+        ))}
+        {PRICE_BANDS.map((b) => (
+          <button
+            key={b.id || "any"}
+            className={`pb-sort-link${band === b.id ? " pb-sort-active" : ""}`}
+            onClick={() => setBand(b.id)}
+          >
+            {b.label}
           </button>
         ))}
       </div>
