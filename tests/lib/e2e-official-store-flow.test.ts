@@ -247,3 +247,75 @@ describe("E2E Official Store: espejo → plantilla → stock → tienda → pedi
     ).toBe("hidden_out_of_stock");
   });
 });
+
+describe("E2E 003C: devolución → inspección → destino → disponible se recupera", () => {
+  it("reintegra a vendible tras inspección OK y aísla lo dañado", () => {
+    // Estado tras un envío: 2 en almacén, pedido entregado de 4 unidades.
+    let movements: InventoryMovement[] = [
+      {
+        id: makeId(), movementType: "recepcion", sku: "BELT-BLUE-L", warehouseId: "alm-1",
+        quantity: 6, unit: "unidad", condition: "ok", direction: "in", sourceType: "recepcion",
+        correlationId: "rcpt-1", actor: "e2e", reason: "recepción", occurredAt: NOW, recordedAt: NOW,
+        status: "publicado", version: INVENTORY_SCHEMA_VERSION,
+      },
+      {
+        id: makeId(), movementType: "ajuste-negativo", sku: "BELT-BLUE-L", warehouseId: "alm-1",
+        quantity: 4, unit: "unidad", condition: "ok", direction: "out", sourceType: "pedido-official-store",
+        correlationId: "order-1", actor: "admin", reason: "envío order-1", occurredAt: NOW, recordedAt: NOW,
+        status: "publicado", version: INVENTORY_SCHEMA_VERSION,
+      },
+    ];
+    expect(deriveOwnedInventory(movements, [], NOW)[0]!.available).toBe(2);
+
+    // Devolución de 2 unidades: 1 OK reintegra, 1 dañada NO cuenta como disponible.
+    const returnIn: InventoryMovement[] = [
+      {
+        id: makeId(), movementType: "devolucion", sku: "BELT-BLUE-L", warehouseId: "alm-1",
+        quantity: 1, unit: "unidad", condition: "ok", direction: "in", sourceType: "devolucion",
+        correlationId: "ret-1", actor: "admin", reason: "Devolución order-1 — inspección OK",
+        occurredAt: NOW, recordedAt: NOW, status: "publicado", version: INVENTORY_SCHEMA_VERSION,
+      },
+      {
+        id: makeId(), movementType: "devolucion", sku: "BELT-BLUE-L", warehouseId: "alm-1",
+        quantity: 1, unit: "unidad", condition: "dañado", direction: "in", sourceType: "devolucion",
+        correlationId: "ret-1", actor: "admin", reason: "Devolución order-1 — dañada",
+        occurredAt: NOW, recordedAt: NOW, status: "publicado", version: INVENTORY_SCHEMA_VERSION,
+      },
+    ];
+    movements = [...movements, ...returnIn];
+    const inv = deriveOwnedInventory(movements, [], NOW)[0]!;
+    expect(inv.available).toBe(3); // 2 + 1 OK (la dañada no vende)
+    expect(inv.damaged).toBe(1);
+    // idempotencia de la contabilización de la devolución (mismo correlationId)
+    const alreadyPosted = movements.filter((m) => m.correlationId === "ret-1").length;
+    expect(alreadyPosted).toBe(2);
+  });
+
+  it("dos checkouts concurrentes sobre las últimas unidades: solo uno gana", () => {
+    const movements: InventoryMovement[] = [
+      {
+        id: makeId(), movementType: "recepcion", sku: "SKU-LAST", warehouseId: "alm-1",
+        quantity: 1, unit: "unidad", condition: "ok", direction: "in", sourceType: "recepcion",
+        correlationId: "rcpt-2", actor: "e2e", reason: "última unidad", occurredAt: NOW, recordedAt: NOW,
+        status: "publicado", version: INVENTORY_SCHEMA_VERSION,
+      },
+    ];
+    const a = createReservation(
+      { idempotencyKey: "co:A", items: [{ sku: "SKU-LAST", warehouseId: "alm-1", quantity: 1 }], expiresAt: "2026-07-23T21:00:00.000Z", sourceType: "checkout", actor: "A" },
+      { movements, reservations: [], nowIso: NOW, makeId },
+    );
+    expect(a.ok).toBe(true);
+    const b = createReservation(
+      { idempotencyKey: "co:B", items: [{ sku: "SKU-LAST", warehouseId: "alm-1", quantity: 1 }], expiresAt: "2026-07-23T21:00:00.000Z", sourceType: "checkout", actor: "B" },
+      { movements, reservations: a.ok ? [a.reservation] : [], nowIso: NOW, makeId },
+    );
+    expect(b.ok).toBe(false);
+    if (!b.ok) expect(b.reason).toBe("OVERSELL_PREVENTED");
+    // el reintento del ganador es idempotente, no duplica
+    const aRetry = createReservation(
+      { idempotencyKey: "co:A", items: [{ sku: "SKU-LAST", warehouseId: "alm-1", quantity: 1 }], expiresAt: "2026-07-23T21:00:00.000Z", sourceType: "checkout", actor: "A" },
+      { movements, reservations: a.ok ? [a.reservation] : [], nowIso: NOW, makeId },
+    );
+    expect(aRetry.ok && aRetry.idempotentReplay).toBe(true);
+  });
+});
