@@ -1,0 +1,20 @@
+final nav item,seccion(es) del registro,ruta,estado
+Overview,dashboard,/,live
+Products,store-products,/catalog/products,live
+Inventory,inventory-stock+transfers+counts+replenishment,/inventory/stock,live
+Warehouses,inventory-warehouses,/inventory/warehouses,live
+Orders,store-orders + sales-official-orders,/store/orders + /sales/official-orders,live
+Fulfillment,operations-fulfillment,/operations/fulfillment,live
+Shipping,operations-fulfillment (etapas por evidencia),/operations/fulfillment,live
+Returns,sales-returns,/sales/returns,live
+Customers,store-customers,/sales/customers,live
+Bulk Orders,purchasing-quick-buy (compras) + /shop/bulk (clientes),/purchasing/quick-buy,live
+Pricing,catalog-pricing,/catalog/pricing,live
+PB Pricing,catalog-pb-pricing,/catalog/pb-pricing,live
+Templates,catalog-templates,/catalog/templates,live
+Shopify Sync,store-mirror (Sync Center) + store,/store/mirror,live
+Analytics,performance-metrics + performance-costs,/performance/metrics,live
+Integrations,control-integrations,/control/integrations,live
+Settings,settings,/settings,live
+Support,support (unica y ultima),/support,live
+Audit,control-audit,/control/audit,live
