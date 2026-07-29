@@ -1,6 +1,6 @@
 [package]
 name = "primebuild-store-desktop"
-version = "0.1.10"
+version = "0.1.11"
 description = "PrimeBuild Official Store — Product Builder for PrimeBuild's commercial channel (desktop shell)"
 authors = ["PrimeBuild"]
 edition = "2021"
