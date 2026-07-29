@@ -1,0 +1,8 @@
+repo,rama,ruta del SDK,sha256(16),igual
+PrimeBuild Official Store,origin/main afae4aa,src/lib/pb-exchange/pb-exchange-sdk.ts,1d21d2b0eb8ff3c0,SI
+PrimeBuild Internal OS,origin/main c361cbf,src/lib/pb-exchange/pb-exchange-sdk.ts,1d21d2b0eb8ff3c0,SI
+CoinOS,origin/main f3310e5,src/lib/pb-exchange/pb-exchange-sdk.ts,1d21d2b0eb8ff3c0,SI
+Platform Nexus,origin/main acb631d,src/lib/pb-exchange/pb-exchange-sdk.ts,1d21d2b0eb8ff3c0,SI
+Partnera,origin/ci/restore-pipeline 9347036,packages/platform-finance/src/pb-exchange-sdk.ts,1d21d2b0eb8ff3c0,SI
+Partnera,origin/main,packages/platform-finance/src/pb-exchange-sdk.ts,1d21d2b0eb8ff3c0,SI
+Eventra,origin/main 9d705fa,packages/config/src/pb-exchange-sdk.ts,1d21d2b0eb8ff3c0,SI
